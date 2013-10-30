@@ -18,8 +18,15 @@ import fi.uef.envi.wavellite.entity.core.Sensor;
 import fi.uef.envi.wavellite.entity.core.base.FeatureBase;
 import fi.uef.envi.wavellite.entity.core.base.PropertyBase;
 import fi.uef.envi.wavellite.entity.core.base.SensorBase;
+import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
+import fi.uef.envi.wavellite.entity.measurement.MeasurementValue;
+import fi.uef.envi.wavellite.entity.measurement.MeasurementValueContext;
+import fi.uef.envi.wavellite.entity.measurement.base.MeasurementResultBase;
+import fi.uef.envi.wavellite.entity.measurement.base.MeasurementValueContextBase;
+import fi.uef.envi.wavellite.entity.measurement.base.MeasurementValueDouble;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.observation.base.SensorObservationBase;
+import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
 import fi.uef.envi.wavellite.module.store.stardog.StoreModuleStardog;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 
@@ -47,17 +54,24 @@ public class StoreModuleStardogTest {
 		StoreModuleStardog store = new StoreModuleStardog("snarl", "localhost", 5820,
 				"test", "admin", "admin", ReasoningType.NONE);
 		
-		SensorObservation so = new SensorObservationBase();
+		MeasurementResult mr = new MeasurementResultBase();
+		MeasurementValue mv = new MeasurementValueDouble(0.0);
+		MeasurementValueContext mvc = new MeasurementValueContextBase();
+		mr.setValue(mv);
+		mr.setContext(mvc);
+		
 		Sensor s = new SensorBase("http://example.org#s1");
 		Property p = new PropertyBase("http://example.org#p1");
 		Feature f = new FeatureBase("http://example.org#f1");
 		
-		so.setSensor(s);
-		so.setProperty(p);
-		so.setFeature(f);
+		mvc.setSensor(s);
+		mvc.setProperty(p);
+		mvc.setFeature(f);
 		
+		MeasurementResultConverter mrc = new MeasurementResultConverter();
 		EntityRepresentationRdfSsn er = new EntityRepresentationRdfSsn("http://example.org");
 		
+		SensorObservation so = mrc.convert(mr);
 		Set<Statement> statements = er.createRepresentation(so);
 		
 		store.store(statements);

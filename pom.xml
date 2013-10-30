@@ -32,5 +32,10 @@
   		<artifactId>wavellite-representation</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>fi.uef.envi.wavellite</groupId>
+  		<artifactId>wavellite-function</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>
