@@ -17,9 +17,7 @@ import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.reasoning.api.ReasoningType;
 
-import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.module.store.StoreModule;
-import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 
 /**
  * <p>
