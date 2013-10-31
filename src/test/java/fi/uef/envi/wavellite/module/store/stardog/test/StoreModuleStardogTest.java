@@ -25,7 +25,6 @@ import fi.uef.envi.wavellite.entity.measurement.base.MeasurementResultBase;
 import fi.uef.envi.wavellite.entity.measurement.base.MeasurementValueContextBase;
 import fi.uef.envi.wavellite.entity.measurement.base.MeasurementValueDouble;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
-import fi.uef.envi.wavellite.entity.observation.base.SensorObservationBase;
 import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
 import fi.uef.envi.wavellite.module.store.stardog.StoreModuleStardog;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
