@@ -50,11 +50,19 @@ public class StoreModuleStardog implements StoreModule {
 	private Namespaces namespaces;
 	private String defaultNamespace;
 
+	public StoreModuleStardog(String database) {
+		this("localhost", database);
+	}
+	
+	public StoreModuleStardog(String host, String database) {
+		this(host, 5820, database, "admin", "admin");
+	}
+	
 	public StoreModuleStardog(String host, int port, String database,
 			String user, String password) {
-		this("http", host, port, database, user, password, ReasoningType.NONE);
+		this("snarl", host, port, database, user, password, ReasoningType.NONE);
 	}
-
+	
 	public StoreModuleStardog(String protocol, String host, int port,
 			String database, String user, String password,
 			ReasoningType reasoningType) {
