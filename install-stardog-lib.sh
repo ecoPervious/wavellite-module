@@ -1,6 +1,4 @@
-# Installs Stardog API and SNARL libs to local maven repository
-# Expects Stardog 2.0.2
-# Run this in Stardog home directory
+# Installs Stardog libs in local maven repository
 
 DEPENDENCY_FILE=/tmp/dependencies.txt
 STARDOG_HOME=/opt/stardog-2.0.2
