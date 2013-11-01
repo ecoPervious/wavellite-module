@@ -5,10 +5,12 @@
 DEPENDENCY_FILE=/tmp/dependencies.txt
 STARDOG_HOME=/opt/stardog-2.0.2
 
+#LIB_DIR=$STARDOG_HOME/client/api
+LIB_DIR=$STARDOG_HOME/client/snarl
+
 rm $DEPENDENCY_FILE
 
-#cd $STARDOG_HOME/client/api/
-cd $STARDOG_HOME/client/snarl/
+cd $LIB_DIR
 
 for file in *
 do
@@ -17,7 +19,7 @@ do
 		GROUP_ID=${BASH_REMATCH[1]}
 		ARTIFACT_ID=${BASH_REMATCH[1]}
 		VERSION=${BASH_REMATCH[2]}
-		FILEPATH=$STARDOG_HOME/client/api/$file
+		FILEPATH=$LIB_DIR/$file
 
 		mvn install:install-file -DgroupId=$GROUP_ID -DartifactId=$ARTIFACT_ID -Dversion=$VERSION -Dfile=$FILEPATH -Dpackaging=jar -DgeneratePom=true
 		
