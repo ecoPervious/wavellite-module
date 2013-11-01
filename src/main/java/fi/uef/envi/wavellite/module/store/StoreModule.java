@@ -9,6 +9,9 @@ import java.util.Set;
 
 import org.openrdf.model.Statement;
 
+import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
+import fi.uef.envi.wavellite.entity.observation.SensorObservation;
+
 /**
  * <p>
  * Title: StoreModule
@@ -28,6 +31,10 @@ import org.openrdf.model.Statement;
 
 public interface StoreModule {
 
+	public void store(MeasurementResult result);
+	
+	public void store(SensorObservation observation);
+	
 	public void store(Set<Statement> statements);
 	
 	public void close();

@@ -3,8 +3,8 @@
 DEPENDENCY_FILE=/tmp/dependencies.txt
 STARDOG_HOME=/opt/stardog-2.0.2
 
-#LIB_DIR=$STARDOG_HOME/client/api
-LIB_DIR=$STARDOG_HOME/client/snarl
+LIB_DIR=$STARDOG_HOME/client/api
+#LIB_DIR=$STARDOG_HOME/client/snarl
 
 rm $DEPENDENCY_FILE
 
@@ -13,7 +13,7 @@ cd $LIB_DIR
 for file in *
 do
     if [[ -f $file ]]; then
-	if [[ $file =~ (.+)-([0-9].+)(\.jar) ]]; then
+	if [[ $file =~ (.+)-([0-9].*)(\.jar) ]]; then
 		GROUP_ID=${BASH_REMATCH[1]}
 		ARTIFACT_ID=${BASH_REMATCH[1]}
 		VERSION=${BASH_REMATCH[2]}

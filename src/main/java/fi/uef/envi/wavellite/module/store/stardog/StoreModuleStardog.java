@@ -17,7 +17,11 @@ import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.reasoning.api.ReasoningType;
 
+import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
+import fi.uef.envi.wavellite.entity.observation.SensorObservation;
+import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
 import fi.uef.envi.wavellite.module.store.StoreModule;
+import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 
 /**
  * <p>
@@ -50,22 +54,55 @@ public class StoreModuleStardog implements StoreModule {
 	private Namespaces namespaces;
 	private String defaultNamespace;
 
-	public StoreModuleStardog(String database) {
-		this("localhost", database);
-	}
-	
+	private MeasurementResultConverter measurementResultConverter;
+	private EntityRepresentationRdfSsn entityRepresentationRdfSsn;
+
 	public StoreModuleStardog(String host, String database) {
-		this(host, 5820, database, "admin", "admin");
+		this("snarl", host, 5820, database, "admin", "admin",
+				ReasoningType.NONE, null);
 	}
-	
-	public StoreModuleStardog(String host, int port, String database,
-			String user, String password) {
-		this("snarl", host, port, database, user, password, ReasoningType.NONE);
+
+	public StoreModuleStardog(String host, String database,
+			String defaultNamespace) {
+		this("snarl", host, 5820, database, "admin", "admin",
+				ReasoningType.NONE, defaultNamespace);
 	}
-	
+
+	public StoreModuleStardog(String protocol, String host, int port,
+			String database) {
+		this(protocol, host, port, database, "admin", "admin",
+				ReasoningType.NONE, null);
+	}
+
+	public StoreModuleStardog(String protocol, String host, int port,
+			String database, String defaultNamespace) {
+		this(protocol, host, port, database, "admin", "admin",
+				ReasoningType.NONE, defaultNamespace);
+	}
+
+	public StoreModuleStardog(String protocol, String host, int port,
+			String database, String user, String password,
+			String defaultNamespace) {
+		this(protocol, host, port, database, user, password,
+				ReasoningType.NONE, defaultNamespace);
+	}
+
+	public StoreModuleStardog(String protocol, String host, int port,
+			String database, String user, String password) {
+		this(protocol, host, port, database, user, password,
+				ReasoningType.NONE, null);
+	}
+
 	public StoreModuleStardog(String protocol, String host, int port,
 			String database, String user, String password,
 			ReasoningType reasoningType) {
+		this(protocol, host, port, database, user, password, reasoningType,
+				null);
+	}
+
+	public StoreModuleStardog(String protocol, String host, int port,
+			String database, String user, String password,
+			ReasoningType reasoningType, String defaultNamespace) {
 		if (protocol == null)
 			throw new NullPointerException("[protocol = null]");
 		if (!protocol.equals("snarl"))
@@ -93,6 +130,7 @@ public class StoreModuleStardog implements StoreModule {
 		this.reasoningType = reasoningType;
 
 		this.url = protocol + "://" + host + ":" + port;
+		this.measurementResultConverter = new MeasurementResultConverter();
 
 		ConnectionConfiguration conf = ConnectionConfiguration.to(database)
 				.server(url).credentials(user, password);
@@ -101,31 +139,49 @@ public class StoreModuleStardog implements StoreModule {
 			this.conn = conf.connect();
 			this.namespaces = conn.namespaces();
 
-			for (Namespace namespace : namespaces) {
-				if (namespace.equals(Namespaces.DEFAULT))
-					this.defaultNamespace = namespace.getName();
+			if (defaultNamespace == null) {
+				for (Namespace namespace : namespaces) {
+					if (namespace.equals(Namespaces.DEFAULT))
+						defaultNamespace = namespace.getName();
+				}
 			}
 		} catch (StardogException e) {
 			e.printStackTrace();
 		}
 
+		if (defaultNamespace == null)
+			defaultNamespace = "http://envi.uef.fi/wavellite";
+
+		this.defaultNamespace = defaultNamespace;
+		this.entityRepresentationRdfSsn = new EntityRepresentationRdfSsn(
+				this.defaultNamespace);
 	}
 
 	public String getDefaultNamespace() {
 		return defaultNamespace;
 	}
-	
+
+	@Override
+	public void store(MeasurementResult result) {
+		store(measurementResultConverter.convert(result));
+	}
+
+	@Override
+	public void store(SensorObservation observation) {
+		store(entityRepresentationRdfSsn.createRepresentation(observation));
+	}
+
 	@Override
 	public void store(Set<Statement> statements) {
 		try {
 			conn.begin();
-			
+
 			Adder adder = conn.add();
-			
-			for (Statement statement: statements) {
+
+			for (Statement statement : statements) {
 				adder.statement(statement);
 			}
-		
+
 			conn.commit();
 		} catch (StardogException e) {
 			// TODO Auto-generated catch block
@@ -141,7 +197,7 @@ public class StoreModuleStardog implements StoreModule {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// private ReasoningConnection rc;
 	// // The base connection with no reasoning
 	// private Connection bc;
