@@ -173,11 +173,6 @@
         <version>2.7.3</version>
     </dependency>
     <dependency>
-        <groupId>pellet</groupId>
-        <artifactId>pellet</artifactId>
-        <version>3.0.0-rc8</version>
-    </dependency>
-    <dependency>
         <groupId>protocols-api-client</groupId>
         <artifactId>protocols-api-client</artifactId>
         <version>2.0.2</version>
@@ -230,11 +225,6 @@
     <dependency>
         <groupId>stardog-reasoning-api</groupId>
         <artifactId>stardog-reasoning-api</artifactId>
-        <version>2.0.2</version>
-    </dependency>
-    <dependency>
-        <groupId>stardog-reasoning-shared</groupId>
-        <artifactId>stardog-reasoning-shared</artifactId>
         <version>2.0.2</version>
     </dependency>
     <dependency>
