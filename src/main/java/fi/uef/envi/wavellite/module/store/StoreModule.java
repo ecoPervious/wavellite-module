@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.openrdf.model.Statement;
 
+import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 
@@ -34,6 +35,8 @@ public interface StoreModule {
 	public void store(MeasurementResult result);
 	
 	public void store(SensorObservation observation);
+	
+	public void store(DatasetObservation observation);
 	
 	public void store(Set<Statement> statements);
 	

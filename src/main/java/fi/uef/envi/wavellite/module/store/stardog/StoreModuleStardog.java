@@ -17,10 +17,12 @@ import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.reasoning.api.ReasoningType;
 
+import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
 import fi.uef.envi.wavellite.module.store.StoreModule;
+import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 
 /**
@@ -56,6 +58,7 @@ public class StoreModuleStardog implements StoreModule {
 
 	private MeasurementResultConverter measurementResultConverter;
 	private EntityRepresentationRdfSsn entityRepresentationRdfSsn;
+	private EntityRepresentationRdfQb entityRepresentationRdfQb;
 
 	public StoreModuleStardog(String host, String database) {
 		this("snarl", host, 5820, database, "admin", "admin",
@@ -155,6 +158,8 @@ public class StoreModuleStardog implements StoreModule {
 		this.defaultNamespace = defaultNamespace;
 		this.entityRepresentationRdfSsn = new EntityRepresentationRdfSsn(
 				this.defaultNamespace);
+		this.entityRepresentationRdfQb = new EntityRepresentationRdfQb(
+				this.defaultNamespace);
 	}
 
 	public String getDefaultNamespace() {
@@ -169,6 +174,11 @@ public class StoreModuleStardog implements StoreModule {
 	@Override
 	public void store(SensorObservation observation) {
 		store(entityRepresentationRdfSsn.createRepresentation(observation));
+	}
+
+	@Override
+	public void store(DatasetObservation observation) {
+		store(entityRepresentationRdfQb.createRepresentation(observation));
 	}
 
 	@Override
