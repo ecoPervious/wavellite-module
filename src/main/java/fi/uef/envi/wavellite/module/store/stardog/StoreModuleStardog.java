@@ -20,10 +20,12 @@ import com.complexible.stardog.reasoning.api.ReasoningType;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
+import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
 import fi.uef.envi.wavellite.module.store.StoreModule;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
+import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
 
 /**
  * <p>
@@ -59,6 +61,7 @@ public class StoreModuleStardog implements StoreModule {
 	private MeasurementResultConverter measurementResultConverter;
 	private EntityRepresentationRdfSsn entityRepresentationRdfSsn;
 	private EntityRepresentationRdfQb entityRepresentationRdfQb;
+	private EntityRepresentationRdfSto entityRepresentationRdfSto;
 
 	public StoreModuleStardog(String host, String database) {
 		this("snarl", host, 5820, database, "admin", "admin",
@@ -160,6 +163,8 @@ public class StoreModuleStardog implements StoreModule {
 				this.defaultNamespace);
 		this.entityRepresentationRdfQb = new EntityRepresentationRdfQb(
 				this.defaultNamespace);
+		this.entityRepresentationRdfSto = new EntityRepresentationRdfSto(
+				this.defaultNamespace);
 	}
 
 	public String getDefaultNamespace() {
@@ -179,6 +184,11 @@ public class StoreModuleStardog implements StoreModule {
 	@Override
 	public void store(DatasetObservation observation) {
 		store(entityRepresentationRdfQb.createRepresentation(observation));
+	}
+
+	@Override
+	public void store(Situation situation) {
+		store(entityRepresentationRdfSto.createRepresentation(situation));
 	}
 
 	@Override
