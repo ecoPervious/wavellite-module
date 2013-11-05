@@ -13,10 +13,11 @@ import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
+import fi.uef.envi.wavellite.module.core.Module;
 
 /**
  * <p>
- * Title: StoreModule
+ * Title: ModuleStore
  * </p>
  * <p>
  * Description:
@@ -31,8 +32,8 @@ import fi.uef.envi.wavellite.entity.situation.Situation;
  * @author Markus Stocker
  */
 
-public interface StoreModule {
-
+public interface ModuleStore extends Module {
+	
 	public void store(MeasurementResult result);
 	
 	public void store(SensorObservation observation);

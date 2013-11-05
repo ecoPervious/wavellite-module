@@ -22,7 +22,7 @@ import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
-import fi.uef.envi.wavellite.module.store.StoreModule;
+import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
@@ -44,7 +44,7 @@ import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
  * @author Markus Stocker, markus.stocker@uef.fi
  */
 
-public class StoreModuleStardog implements StoreModule {
+public class ModuleStoreStardog implements ModuleStore {
 
 	private String protocol;
 	private String host;
@@ -63,50 +63,50 @@ public class StoreModuleStardog implements StoreModule {
 	private EntityRepresentationRdfQb entityRepresentationRdfQb;
 	private EntityRepresentationRdfSto entityRepresentationRdfSto;
 
-	public StoreModuleStardog(String host, String database) {
+	public ModuleStoreStardog(String host, String database) {
 		this("snarl", host, 5820, database, "admin", "admin",
 				ReasoningType.NONE, null);
 	}
 
-	public StoreModuleStardog(String host, String database,
+	public ModuleStoreStardog(String host, String database,
 			String defaultNamespace) {
 		this("snarl", host, 5820, database, "admin", "admin",
 				ReasoningType.NONE, defaultNamespace);
 	}
 
-	public StoreModuleStardog(String protocol, String host, int port,
+	public ModuleStoreStardog(String protocol, String host, int port,
 			String database) {
 		this(protocol, host, port, database, "admin", "admin",
 				ReasoningType.NONE, null);
 	}
 
-	public StoreModuleStardog(String protocol, String host, int port,
+	public ModuleStoreStardog(String protocol, String host, int port,
 			String database, String defaultNamespace) {
 		this(protocol, host, port, database, "admin", "admin",
 				ReasoningType.NONE, defaultNamespace);
 	}
 
-	public StoreModuleStardog(String protocol, String host, int port,
+	public ModuleStoreStardog(String protocol, String host, int port,
 			String database, String user, String password,
 			String defaultNamespace) {
 		this(protocol, host, port, database, user, password,
 				ReasoningType.NONE, defaultNamespace);
 	}
 
-	public StoreModuleStardog(String protocol, String host, int port,
+	public ModuleStoreStardog(String protocol, String host, int port,
 			String database, String user, String password) {
 		this(protocol, host, port, database, user, password,
 				ReasoningType.NONE, null);
 	}
 
-	public StoreModuleStardog(String protocol, String host, int port,
+	public ModuleStoreStardog(String protocol, String host, int port,
 			String database, String user, String password,
 			ReasoningType reasoningType) {
 		this(protocol, host, port, database, user, password, reasoningType,
 				null);
 	}
 
-	public StoreModuleStardog(String protocol, String host, int port,
+	public ModuleStoreStardog(String protocol, String host, int port,
 			String database, String user, String password,
 			ReasoningType reasoningType, String defaultNamespace) {
 		if (protocol == null)
