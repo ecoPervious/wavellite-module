@@ -21,7 +21,7 @@ import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
-import fi.uef.envi.wavellite.function.observation.MeasurementResultConverter;
+import fi.uef.envi.wavellite.function.observation.MeasurementResultConversion;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
@@ -58,7 +58,7 @@ public class ModuleStoreStardog implements ModuleStore {
 	private Namespaces namespaces;
 	private String defaultNamespace;
 
-	private MeasurementResultConverter measurementResultConverter;
+	private MeasurementResultConversion measurementResultConverter;
 	private EntityRepresentationRdfSsn entityRepresentationRdfSsn;
 	private EntityRepresentationRdfQb entityRepresentationRdfQb;
 	private EntityRepresentationRdfSto entityRepresentationRdfSto;
@@ -136,7 +136,7 @@ public class ModuleStoreStardog implements ModuleStore {
 		this.reasoningType = reasoningType;
 
 		this.url = protocol + "://" + host + ":" + port;
-		this.measurementResultConverter = new MeasurementResultConverter();
+		this.measurementResultConverter = new MeasurementResultConversion();
 
 		ConnectionConfiguration conf = ConnectionConfiguration.to(database)
 				.server(url).credentials(user, password);
