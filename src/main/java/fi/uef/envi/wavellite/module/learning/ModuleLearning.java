@@ -5,7 +5,10 @@
 
 package fi.uef.envi.wavellite.module.learning;
 
+import java.util.Set;
+
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
+import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.module.core.Module;
 
 /**
@@ -27,8 +30,6 @@ import fi.uef.envi.wavellite.module.core.Module;
 
 public interface ModuleLearning extends Module {
 
-	public void addDatasetObservation(DatasetObservation observation);
-
-	public void addListener(ModuleLearningListener listener);
+	public Set<Situation> getSituations(Set<DatasetObservation> observations);
 
 }
