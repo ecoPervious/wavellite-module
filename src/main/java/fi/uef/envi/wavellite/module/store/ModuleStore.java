@@ -44,6 +44,8 @@ public interface ModuleStore extends Module {
 	
 	public void store(Set<Statement> statements);
 	
+	public String getDefaultNamespace();
+	
 	public void close();
 	
 }

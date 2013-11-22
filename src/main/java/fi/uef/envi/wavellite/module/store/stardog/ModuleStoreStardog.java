@@ -51,7 +51,6 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 	private String url;
 	private Connection conn;
 	private Namespaces namespaces;
-	private String defaultNamespace;
 
 	public ModuleStoreStardog(String host, String database) {
 		this("snarl", host, 5820, database, "admin", "admin",
@@ -148,7 +147,7 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 			defaultNamespace = "http://envi.uef.fi/wavellite";
 
 		this.defaultNamespace = defaultNamespace;
-		
+
 		entityRepresentationSsn = new EntityRepresentationRdfSsn(
 				this.defaultNamespace);
 		entityRepresentationQb = new EntityRepresentationRdfQb(
@@ -157,34 +156,30 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 				this.defaultNamespace);
 	}
 
-	public String getDefaultNamespace() {
-		return defaultNamespace;
-	}
-	
 	public String getProtocol() {
 		return protocol;
 	}
-	
+
 	public String getHost() {
 		return host;
 	}
-	
+
 	public int getPort() {
 		return port;
 	}
-	
+
 	public String getDatabase() {
 		return database;
 	}
-	
+
 	public String getUser() {
 		return user;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public ReasoningType getReasoningType() {
 		return reasoningType;
 	}
@@ -214,5 +209,5 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

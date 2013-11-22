@@ -34,6 +34,7 @@ import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
 
 public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
+	protected String defaultNamespace;
 	protected EntityRepresentationRdfSsn entityRepresentationSsn;
 	protected EntityRepresentationRdfQb entityRepresentationQb;
 	protected EntityRepresentationRdfSto entityRepresentationSto;
@@ -44,6 +45,13 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		entityRepresentationSsn = new EntityRepresentationRdfSsn();
 		entityRepresentationQb = new EntityRepresentationRdfQb();
 		entityRepresentationSto = new EntityRepresentationRdfSto();
+	}
+
+	public AbstractModuleStoreRdf(String ns) {
+		measurementResultConversion = new MeasurementResultConversion();
+		entityRepresentationSsn = new EntityRepresentationRdfSsn(ns);
+		entityRepresentationQb = new EntityRepresentationRdfQb(ns);
+		entityRepresentationSto = new EntityRepresentationRdfSto(ns);
 	}
 
 	@Override
@@ -64,6 +72,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	@Override
 	public void store(Situation situation) {
 		store(entityRepresentationSto.createRepresentation(situation));
+	}
+
+	@Override
+	public String getDefaultNamespace() {
+		return defaultNamespace;
 	}
 
 }
