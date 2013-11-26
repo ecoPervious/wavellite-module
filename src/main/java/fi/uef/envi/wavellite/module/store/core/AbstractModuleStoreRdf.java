@@ -9,8 +9,8 @@ import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
-import fi.uef.envi.wavellite.function.observation.MeasurementResultConversion;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
+import fi.uef.envi.wavellite.operator.observation.TranslatorMeasurementResult;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
@@ -38,17 +38,17 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected EntityRepresentationRdfSsn entityRepresentationSsn;
 	protected EntityRepresentationRdfQb entityRepresentationQb;
 	protected EntityRepresentationRdfSto entityRepresentationSto;
-	protected MeasurementResultConversion measurementResultConversion;
+	protected TranslatorMeasurementResult measurementResultConversion;
 
 	public AbstractModuleStoreRdf() {
-		measurementResultConversion = new MeasurementResultConversion();
+		measurementResultConversion = new TranslatorMeasurementResult();
 		entityRepresentationSsn = new EntityRepresentationRdfSsn();
 		entityRepresentationQb = new EntityRepresentationRdfQb();
 		entityRepresentationSto = new EntityRepresentationRdfSto();
 	}
 
 	public AbstractModuleStoreRdf(String ns) {
-		measurementResultConversion = new MeasurementResultConversion();
+		measurementResultConversion = new TranslatorMeasurementResult();
 		entityRepresentationSsn = new EntityRepresentationRdfSsn(ns);
 		entityRepresentationQb = new EntityRepresentationRdfQb(ns);
 		entityRepresentationSto = new EntityRepresentationRdfSto(ns);
