@@ -56,7 +56,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 	@Override
 	public void store(MeasurementResult result) {
-		store(measurementResultConversion.convert(result));
+		store(measurementResultConversion.translate(result));
 	}
 
 	@Override
