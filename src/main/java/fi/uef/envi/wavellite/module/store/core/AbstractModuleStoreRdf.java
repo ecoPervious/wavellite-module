@@ -10,7 +10,7 @@ import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
-import fi.uef.envi.wavellite.operator.observation.TranslatorMeasurementResult;
+import fi.uef.envi.wavellite.operator.translation.TranslatorMeasurementResult;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
