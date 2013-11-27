@@ -6,11 +6,8 @@
 package fi.uef.envi.wavellite.module.learning;
 
 import java.util.Collection;
-import java.util.Queue;
-import java.util.Set;
 
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
-import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.module.core.Module;
 
 /**
@@ -31,8 +28,6 @@ import fi.uef.envi.wavellite.module.core.Module;
  */
 
 public interface ModuleLearning extends Module {
-
-	public void set(Queue<Situation> situations);
 
 	public void add(DatasetObservation observation);
 	
