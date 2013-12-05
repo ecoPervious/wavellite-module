@@ -5,7 +5,7 @@
 
 package fi.uef.envi.wavellite.module.learning;
 
-import java.util.Collection;
+import java.util.Set;
 
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.module.core.Module;
@@ -31,6 +31,6 @@ public interface ModuleLearning extends Module {
 
 	public void add(DatasetObservation observation);
 	
-	public void addAll(Collection<DatasetObservation> observations);
+	public void addAll(Set<DatasetObservation> observations);
 	
 }

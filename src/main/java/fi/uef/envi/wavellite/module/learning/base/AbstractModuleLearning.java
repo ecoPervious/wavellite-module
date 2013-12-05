@@ -5,7 +5,7 @@
 
 package fi.uef.envi.wavellite.module.learning.base;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -42,9 +42,8 @@ public abstract class AbstractModuleLearning implements ModuleLearning {
 	}
 
 	@Override
-	public void addAll(Collection<DatasetObservation> observations) {
-		for (DatasetObservation observation : observations)
-			add(observation);
+	public void add(DatasetObservation observation) {
+		addAll(Collections.singleton(observation));
 	}
-
+	
 }

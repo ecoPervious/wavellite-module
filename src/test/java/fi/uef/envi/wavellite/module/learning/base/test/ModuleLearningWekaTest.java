@@ -5,7 +5,9 @@
 
 package fi.uef.envi.wavellite.module.learning.base.test;
 
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Test;
@@ -30,8 +32,8 @@ import fi.uef.envi.wavellite.entity.situation.base.RelevantIndividualBase;
 import fi.uef.envi.wavellite.entity.situation.base.SituationBase;
 import fi.uef.envi.wavellite.module.learning.ModuleLearning;
 import fi.uef.envi.wavellite.module.learning.base.AbstractModuleLearning;
-import fi.uef.envi.wavellite.operator.acquisition.KnowledgeAcquirerListener;
-import fi.uef.envi.wavellite.operator.acquisition.weka.KnowledgeAcquirerWeka;
+import fi.uef.envi.wavellite.operator.acquisition.base.weka.SituationAcquirerListenerWeka;
+import fi.uef.envi.wavellite.operator.acquisition.base.weka.SituationAcquirerWeka;
 
 /**
  * <p>
@@ -112,29 +114,35 @@ public class ModuleLearningWekaTest {
 
 	private class TestModuleLearning extends AbstractModuleLearning {
 
-		private KnowledgeAcquirerWeka o;
+		private SituationAcquirerWeka o;
 
 		public TestModuleLearning(Queue<Situation> situations) {
 			super(situations);
 
 			try {
-				o = new KnowledgeAcquirerWeka(new MultilayerPerceptron(),
+				o = new SituationAcquirerWeka(new MultilayerPerceptron(),
 						"src/test/resources/test.modulelearningweka.1.arff");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			o.setGlobalListener(new TestKnowledgeAcquirerListener());
+			o.setListener(new TestKnowledgeAcquirerListener());
 		}
 
 		@Override
-		public void add(DatasetObservation observation) {
-			o.addDatasetObservation(observation);
+		public void addAll(Set<DatasetObservation> observations) {
+			situations.addAll(o.acquire(observations));
 		}
 
 		private class TestKnowledgeAcquirerListener implements
-				KnowledgeAcquirerListener {
+				SituationAcquirerListenerWeka {
 
+			private Set<Situation> situations;
+			
+			public TestKnowledgeAcquirerListener() {
+				situations = new HashSet<Situation>();
+			}
+			
 			@Override
 			public void onClassification(String label) {
 				Situation s = new SituationBase("s1");
@@ -147,6 +155,11 @@ public class ModuleLearningWekaTest {
 				s.addSupportedInfon(i);
 
 				situations.add(s);
+			}
+
+			@Override
+			public Set<Situation> getSituations() {
+				return situations;
 			}
 		}
 
