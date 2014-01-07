@@ -7,13 +7,13 @@ package fi.uef.envi.wavellite.module.core;
 
 /**
  * <p>
- * Title:
+ * Title: Module
  * </p>
  * <p>
  * Description:
  * </p>
  * <p>
- * Project:
+ * Project: Wavellite Module
  * </p>
  * <p>
  * Copyright: Copyright (C) 2013
