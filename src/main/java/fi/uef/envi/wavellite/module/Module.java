@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package fi.uef.envi.wavellite.module.core;
+package fi.uef.envi.wavellite.module;
 
 /**
  * <p>

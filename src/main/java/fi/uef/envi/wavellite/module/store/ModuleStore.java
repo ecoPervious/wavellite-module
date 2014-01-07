@@ -13,7 +13,7 @@ import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
-import fi.uef.envi.wavellite.module.core.Module;
+import fi.uef.envi.wavellite.module.Module;
 
 /**
  * <p>

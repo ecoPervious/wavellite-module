@@ -16,7 +16,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 
-import fi.uef.envi.wavellite.module.store.core.AbstractModuleStoreRdf;
+import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
 import fi.uef.envi.wavellite.vocabulary.WTO;
 
 /**
