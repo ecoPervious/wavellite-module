@@ -5,10 +5,10 @@
 
 package fi.uef.envi.wavellite.module.learning.base.test;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -30,7 +30,7 @@ import fi.uef.envi.wavellite.entity.situation.base.ElementaryInfonBase;
 import fi.uef.envi.wavellite.entity.situation.base.RelationBase;
 import fi.uef.envi.wavellite.entity.situation.base.RelevantIndividualBase;
 import fi.uef.envi.wavellite.entity.situation.base.SituationBase;
-import fi.uef.envi.wavellite.module.learning.ModuleLearning;
+import fi.uef.envi.wavellite.module.ModuleResult;
 import fi.uef.envi.wavellite.module.learning.base.AbstractModuleLearning;
 import fi.uef.envi.wavellite.operator.acquisition.base.weka.SituationAcquirerListenerWeka;
 import fi.uef.envi.wavellite.operator.acquisition.base.weka.SituationAcquirerWeka;
@@ -56,9 +56,9 @@ public class ModuleLearningWekaTest {
 
 	@Test
 	public void test1() {
-		Queue<Situation> q = new LinkedBlockingQueue<Situation>();
-		ModuleLearning m = new TestModuleLearning(q);
-
+		ModuleResult<DatasetObservation, Situation> m = new TestModuleLearning();
+		Queue<Situation> q = m.result();
+		
 		DatasetObservation o = new DatasetObservationBase();
 
 		o.addComponent(new ComponentPropertyBase("p1"),
@@ -68,8 +68,8 @@ public class ModuleLearningWekaTest {
 		o.addComponent(new ComponentPropertyBase("p3"),
 				new ComponentPropertyValueInteger(18));
 
-		m.add(o);
-
+		m.consider(o);
+		
 		Situation a = q.poll();
 
 		Situation e = new SituationBase("s1");
@@ -85,8 +85,8 @@ public class ModuleLearningWekaTest {
 	
 	@Test
 	public void test2() {
-		Queue<Situation> q = new LinkedBlockingQueue<Situation>();
-		ModuleLearning m = new TestModuleLearning(q);
+		ModuleResult<DatasetObservation, Situation> m = new TestModuleLearning();
+		Queue<Situation> q = m.result();
 
 		DatasetObservation o = new DatasetObservationBase();
 
@@ -97,7 +97,7 @@ public class ModuleLearningWekaTest {
 		o.addComponent(new ComponentPropertyBase("p3"),
 				new ComponentPropertyValueInteger(18));
 
-		m.add(o);
+		m.consider(o);
 
 		Situation a = q.poll();
 
@@ -116,9 +116,7 @@ public class ModuleLearningWekaTest {
 
 		private SituationAcquirerWeka o;
 
-		public TestModuleLearning(Queue<Situation> situations) {
-			super(situations);
-
+		public TestModuleLearning() {
 			try {
 				o = new SituationAcquirerWeka(new MultilayerPerceptron(),
 						"src/test/resources/test.modulelearningweka.1.arff");
@@ -130,8 +128,8 @@ public class ModuleLearningWekaTest {
 		}
 
 		@Override
-		public void addAll(Set<DatasetObservation> observations) {
-			situations.addAll(o.acquire(observations));
+		public void considerAll(Collection<DatasetObservation> observations) {
+			queue.addAll(o.acquire(observations));
 		}
 
 		private class TestKnowledgeAcquirerListener implements

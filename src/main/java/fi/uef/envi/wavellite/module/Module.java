@@ -5,6 +5,8 @@
 
 package fi.uef.envi.wavellite.module;
 
+import java.util.Collection;
+
 /**
  * <p>
  * Title: Module
@@ -22,6 +24,10 @@ package fi.uef.envi.wavellite.module;
  * @author Markus Stocker
  */
 
-public interface Module {
+public interface Module<T> {
+
+	public void consider(T entity);
+
+	public void considerAll(Collection<T> entities);
 
 }

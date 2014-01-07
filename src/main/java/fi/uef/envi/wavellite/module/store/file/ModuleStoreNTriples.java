@@ -56,18 +56,24 @@ public class ModuleStoreNTriples extends AbstractModuleStoreRdf {
 		}
 
 		rdfWriter = Rio.createWriter(RDFFormat.NTRIPLES, outputStream);
+
+		try {
+			rdfWriter.startRDF();
+		} catch (RDFHandlerException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public void store(Set<Statement> statements) {
+	public void storeAll(Set<Statement> statements) {
+		for (Statement statement : statements)
+			store(statement);
+	}
+
+	@Override
+	public void store(Statement statement) {
 		try {
-			rdfWriter.startRDF();
-			
-			for (Statement statement : statements) {
-				rdfWriter.handleStatement(statement);
-			}
-			
-			rdfWriter.endRDF();
+			rdfWriter.handleStatement(statement);
 		} catch (RDFHandlerException e) {
 			throw new RuntimeException(e);
 		}
@@ -75,6 +81,12 @@ public class ModuleStoreNTriples extends AbstractModuleStoreRdf {
 
 	@Override
 	public void close() {
+		try {
+			rdfWriter.endRDF();
+		} catch (RDFHandlerException e) {
+			throw new RuntimeException(e);
+		}
+
 		try {
 			outputStream.close();
 		} catch (IOException e) {

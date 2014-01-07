@@ -1,14 +1,13 @@
 /*
- * Copyright (C) 2013 see CREDITS.txt
+ * Copyright (C) 2014 see CREDITS.txt
  * All rights reserved.
  */
 
 package fi.uef.envi.wavellite.module.learning;
 
-import java.util.Set;
-
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
-import fi.uef.envi.wavellite.module.Module;
+import fi.uef.envi.wavellite.entity.situation.Situation;
+import fi.uef.envi.wavellite.module.ModuleResult;
 
 /**
  * <p>
@@ -18,19 +17,16 @@ import fi.uef.envi.wavellite.module.Module;
  * Description:
  * </p>
  * <p>
- * Project: Wavellite Module
+ * Project: Wavellite Entity
  * </p>
  * <p>
- * Copyright: Copyright (C) 2013
+ * Copyright: Copyright (C) 2014
  * </p>
  * 
  * @author Markus Stocker
  */
 
-public interface ModuleLearning extends Module {
+public interface ModuleLearning extends
+		ModuleResult<DatasetObservation, Situation> {
 
-	public void add(DatasetObservation observation);
-	
-	public void addAll(Set<DatasetObservation> observations);
-	
 }

@@ -9,10 +9,7 @@ import java.util.Set;
 
 import org.openrdf.model.Statement;
 
-import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
-import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
-import fi.uef.envi.wavellite.entity.observation.SensorObservation;
-import fi.uef.envi.wavellite.entity.situation.Situation;
+import fi.uef.envi.wavellite.entity.core.Entity;
 import fi.uef.envi.wavellite.module.Module;
 
 /**
@@ -32,20 +29,14 @@ import fi.uef.envi.wavellite.module.Module;
  * @author Markus Stocker
  */
 
-public interface ModuleStore extends Module {
-	
-	public void store(MeasurementResult result);
-	
-	public void store(SensorObservation observation);
-	
-	public void store(DatasetObservation observation);
-	
-	public void store(Situation situation);
-	
-	public void store(Set<Statement> statements);
-	
-	public String getDefaultNamespace();
-	
+public interface ModuleStore extends Module<Entity> {
+
+	public void store(Statement statement);
+
+	public void storeAll(Set<Statement> statements);
+
+	public String getNamespace();
+
 	public void close();
-	
+
 }

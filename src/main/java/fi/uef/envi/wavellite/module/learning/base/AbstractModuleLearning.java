@@ -6,11 +6,10 @@
 package fi.uef.envi.wavellite.module.learning.base;
 
 import java.util.Collections;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
+import fi.uef.envi.wavellite.module.base.AbstractModuleResult;
 import fi.uef.envi.wavellite.module.learning.ModuleLearning;
 
 /**
@@ -30,20 +29,12 @@ import fi.uef.envi.wavellite.module.learning.ModuleLearning;
  * @author Markus Stocker
  */
 
-public abstract class AbstractModuleLearning implements ModuleLearning {
-
-	protected Queue<Situation> situations;
-	
-	public AbstractModuleLearning(Queue<Situation> situations) {
-		if (situations == null)
-			situations = new ConcurrentLinkedQueue<Situation>();
-		
-		this.situations = situations;
-	}
+public abstract class AbstractModuleLearning extends
+		AbstractModuleResult<DatasetObservation, Situation> implements ModuleLearning {
 
 	@Override
-	public void add(DatasetObservation observation) {
-		addAll(Collections.singleton(observation));
+	public void consider(DatasetObservation observation) {
+		considerAll(Collections.singleton(observation));
 	}
-	
+
 }

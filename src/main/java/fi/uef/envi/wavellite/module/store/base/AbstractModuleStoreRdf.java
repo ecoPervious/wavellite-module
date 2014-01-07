@@ -5,6 +5,11 @@
 
 package fi.uef.envi.wavellite.module.store.base;
 
+import java.util.Collection;
+
+import fi.uef.envi.wavellite.entity.core.Entity;
+import fi.uef.envi.wavellite.entity.core.EntityVisitor;
+import fi.uef.envi.wavellite.entity.core.base.AbstractEntityVisitor;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
@@ -35,48 +40,59 @@ import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
 public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 	protected String defaultNamespace;
-	protected EntityRepresentationRdfSsn entityRepresentationSsn;
-	protected EntityRepresentationRdfQb entityRepresentationQb;
-	protected EntityRepresentationRdfSto entityRepresentationSto;
-	protected MeasurementResultTranslatorBase measurementResultConversion;
+	protected EntityRepresentationRdfSsn entityRepresentationSsn = new EntityRepresentationRdfSsn();
+	protected EntityRepresentationRdfQb entityRepresentationQb = new EntityRepresentationRdfQb();
+	protected EntityRepresentationRdfSto entityRepresentationSto = new EntityRepresentationRdfSto();
+	protected MeasurementResultTranslatorBase measurementResultConversion = new MeasurementResultTranslatorBase();
+
+	private EntityVisitor entityVisitor = new ThisEntityVisitor();
 
 	public AbstractModuleStoreRdf() {
-		measurementResultConversion = new MeasurementResultTranslatorBase();
-		entityRepresentationSsn = new EntityRepresentationRdfSsn();
-		entityRepresentationQb = new EntityRepresentationRdfQb();
-		entityRepresentationSto = new EntityRepresentationRdfSto();
 	}
 
 	public AbstractModuleStoreRdf(String ns) {
-		measurementResultConversion = new MeasurementResultTranslatorBase();
-		entityRepresentationSsn = new EntityRepresentationRdfSsn(ns);
-		entityRepresentationQb = new EntityRepresentationRdfQb(ns);
-		entityRepresentationSto = new EntityRepresentationRdfSto(ns);
+		entityRepresentationSsn.setNamespace(ns);
+		entityRepresentationQb.setNamespace(ns);
+		entityRepresentationSto.setNamespace(ns);
 	}
 
 	@Override
-	public void store(MeasurementResult result) {
-		store(measurementResultConversion.translate(result));
+	public void consider(Entity entity) {
+		entity.accept(entityVisitor);
 	}
 
 	@Override
-	public void store(SensorObservation observation) {
-		store(entityRepresentationSsn.createRepresentation(observation));
+	public void considerAll(Collection<Entity> entities) {
+		for (Entity entity : entities)
+			consider(entity);
 	}
 
 	@Override
-	public void store(DatasetObservation observation) {
-		store(entityRepresentationQb.createRepresentation(observation));
-	}
-
-	@Override
-	public void store(Situation situation) {
-		store(entityRepresentationSto.createRepresentation(situation));
-	}
-
-	@Override
-	public String getDefaultNamespace() {
+	public String getNamespace() {
 		return defaultNamespace;
+	}
+
+	private class ThisEntityVisitor extends AbstractEntityVisitor {
+
+		@Override
+		public void visit(MeasurementResult entity) {
+			visit(measurementResultConversion.translate(entity));
+		}
+
+		@Override
+		public void visit(SensorObservation entity) {
+			storeAll(entityRepresentationSsn.createRepresentation(entity));
+		}
+
+		@Override
+		public void visit(DatasetObservation entity) {
+			storeAll(entityRepresentationQb.createRepresentation(entity));
+		}
+
+		@Override
+		public void visit(Situation entity) {
+			storeAll(entityRepresentationSto.createRepresentation(entity));
+		}
 	}
 
 }

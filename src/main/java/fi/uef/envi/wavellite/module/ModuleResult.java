@@ -3,13 +3,13 @@
  * All rights reserved.
  */
 
-package fi.uef.envi.wavellite.module.processing;
+package fi.uef.envi.wavellite.module;
 
-import fi.uef.envi.wavellite.module.ModuleResult;
+import java.util.Queue;
 
 /**
  * <p>
- * Title: ModuleProcessing
+ * Title: ModuleResult
  * </p>
  * <p>
  * Description:
@@ -24,6 +24,8 @@ import fi.uef.envi.wavellite.module.ModuleResult;
  * @author Markus Stocker
  */
 
-public interface ModuleProcessing<U, V> extends ModuleResult<U, V> {
+public interface ModuleResult<U,V> extends Module<U> {
 
+	public Queue<V> result();
+	
 }

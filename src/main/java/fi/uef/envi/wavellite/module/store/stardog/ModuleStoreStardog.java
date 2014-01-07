@@ -5,6 +5,7 @@
 
 package fi.uef.envi.wavellite.module.store.stardog;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.openrdf.model.Namespace;
@@ -18,9 +19,6 @@ import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.reasoning.api.ReasoningType;
 
 import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
-import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
-import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
-import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
 
 /**
  * <p>
@@ -148,12 +146,9 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 
 		this.defaultNamespace = defaultNamespace;
 
-		entityRepresentationSsn = new EntityRepresentationRdfSsn(
-				this.defaultNamespace);
-		entityRepresentationQb = new EntityRepresentationRdfQb(
-				this.defaultNamespace);
-		entityRepresentationSto = new EntityRepresentationRdfSto(
-				this.defaultNamespace);
+		entityRepresentationSsn.setNamespace(defaultNamespace);
+		entityRepresentationQb.setNamespace(defaultNamespace);
+		entityRepresentationSto.setNamespace(defaultNamespace);
 	}
 
 	public String getProtocol() {
@@ -185,7 +180,12 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 	}
 
 	@Override
-	public void store(Set<Statement> statements) {
+	public void store(Statement statement) {
+		storeAll(Collections.singleton(statement));
+	}
+	
+	@Override
+	public void storeAll(Set<Statement> statements) {
 		try {
 			conn.begin();
 
