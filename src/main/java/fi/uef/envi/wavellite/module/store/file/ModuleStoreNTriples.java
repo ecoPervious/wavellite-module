@@ -17,7 +17,6 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 
 import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
-import fi.uef.envi.wavellite.vocabulary.WTO;
 
 /**
  * <p>
@@ -42,7 +41,7 @@ public class ModuleStoreNTriples extends AbstractModuleStoreRdf {
 	private RDFWriter rdfWriter;
 
 	public ModuleStoreNTriples(File file) {
-		this(file, WTO.ns);
+		this(file, null);
 
 	}
 
