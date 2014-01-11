@@ -20,7 +20,7 @@ import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
 
 /**
  * <p>
- * Title: ModuleStoreNTriples
+ * Title: ModuleStoreFile
  * </p>
  * <p>
  * Description:
@@ -35,17 +35,22 @@ import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
  * @author Markus Stocker
  */
 
-public class ModuleStoreNTriples extends AbstractModuleStoreRdf {
+public class ModuleStoreFile extends AbstractModuleStoreRdf {
 
 	private FileOutputStream outputStream;
 	private RDFWriter rdfWriter;
 
-	public ModuleStoreNTriples(File file) {
+	public ModuleStoreFile(File file) {
 		this(file, null);
 
 	}
 
-	public ModuleStoreNTriples(File file, String defaultNamespace) {
+	public ModuleStoreFile(File file, String defaultNamespace) {
+		this(file, defaultNamespace, RDFFormat.NTRIPLES);
+	}
+
+	public ModuleStoreFile(File file, String defaultNamespace,
+			RDFFormat rdfFormat) {
 		super(defaultNamespace);
 
 		try {
@@ -54,7 +59,7 @@ public class ModuleStoreNTriples extends AbstractModuleStoreRdf {
 			throw new RuntimeException(e);
 		}
 
-		rdfWriter = Rio.createWriter(RDFFormat.NTRIPLES, outputStream);
+		rdfWriter = Rio.createWriter(rdfFormat, outputStream);
 
 		try {
 			rdfWriter.startRDF();
