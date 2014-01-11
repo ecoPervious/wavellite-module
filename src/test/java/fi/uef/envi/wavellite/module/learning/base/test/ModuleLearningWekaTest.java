@@ -32,8 +32,8 @@ import fi.uef.envi.wavellite.entity.situation.base.RelevantIndividualBase;
 import fi.uef.envi.wavellite.entity.situation.base.SituationBase;
 import fi.uef.envi.wavellite.module.ModuleResult;
 import fi.uef.envi.wavellite.module.learning.base.AbstractModuleLearning;
-import fi.uef.envi.wavellite.operator.acquisition.base.weka.SituationAcquirerListenerWeka;
-import fi.uef.envi.wavellite.operator.acquisition.base.weka.SituationAcquirerWeka;
+import fi.uef.envi.wavellite.operator.extraction.base.weka.SituationExtractorListenerWeka;
+import fi.uef.envi.wavellite.operator.extraction.base.weka.SituationExtractorWeka;
 
 /**
  * <p>
@@ -114,11 +114,11 @@ public class ModuleLearningWekaTest {
 
 	private class TestModuleLearning extends AbstractModuleLearning {
 
-		private SituationAcquirerWeka o;
+		private SituationExtractorWeka o;
 
 		public TestModuleLearning() {
 			try {
-				o = new SituationAcquirerWeka(new MultilayerPerceptron(),
+				o = new SituationExtractorWeka(new MultilayerPerceptron(),
 						"src/test/resources/test.modulelearningweka.1.arff");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -133,7 +133,7 @@ public class ModuleLearningWekaTest {
 		}
 
 		private class TestKnowledgeAcquirerListener implements
-				SituationAcquirerListenerWeka {
+				SituationExtractorListenerWeka {
 
 			private Set<Situation> situations;
 			
