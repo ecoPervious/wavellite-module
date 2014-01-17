@@ -93,6 +93,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		public void visit(Situation entity) {
 			storeAll(entityRepresentationSto.createRepresentation(entity));
 		}
+
 	}
 
 }
