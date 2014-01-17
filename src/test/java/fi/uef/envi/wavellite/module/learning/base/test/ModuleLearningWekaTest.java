@@ -24,7 +24,7 @@ import fi.uef.envi.wavellite.entity.derivation.base.DatasetObservationBase;
 import fi.uef.envi.wavellite.entity.situation.ElementaryInfon;
 import fi.uef.envi.wavellite.entity.situation.Polarity;
 import fi.uef.envi.wavellite.entity.situation.Situation;
-import fi.uef.envi.wavellite.entity.situation.base.AttributeValued;
+import fi.uef.envi.wavellite.entity.situation.base.AttributeRelevantIndividual;
 import fi.uef.envi.wavellite.entity.situation.base.AttributeValueString;
 import fi.uef.envi.wavellite.entity.situation.base.ElementaryInfonBase;
 import fi.uef.envi.wavellite.entity.situation.base.RelationBase;
@@ -75,7 +75,7 @@ public class ModuleLearningWekaTest {
 		Situation e = new SituationBase("s1");
 		ElementaryInfon i = new ElementaryInfonBase("i1");
 		i.setRelation(new RelationBase("r1"));
-		i.addRelevantObject(new RelevantIndividualBase("o1", new AttributeValued(
+		i.addRelevantObject(new RelevantIndividualBase("o1", new AttributeRelevantIndividual(
 				"a1", new AttributeValueString("v1", "A"))));
 		i.setPolarity(Polarity.True);
 		e.addSupportedInfon(i);
@@ -104,7 +104,7 @@ public class ModuleLearningWekaTest {
 		Situation e = new SituationBase("s1");
 		ElementaryInfon i = new ElementaryInfonBase("i1");
 		i.setRelation(new RelationBase("r1"));
-		i.addRelevantObject(new RelevantIndividualBase("o1", new AttributeValued(
+		i.addRelevantObject(new RelevantIndividualBase("o1", new AttributeRelevantIndividual(
 				"a1", new AttributeValueString("v1", "B"))));
 		i.setPolarity(Polarity.True);
 		e.addSupportedInfon(i);
@@ -147,7 +147,7 @@ public class ModuleLearningWekaTest {
 				ElementaryInfon i = new ElementaryInfonBase("i1");
 				i.setRelation(new RelationBase("r1"));
 				i.addRelevantObject(new RelevantIndividualBase("o1",
-						new AttributeValued("a1", new AttributeValueString("v1",
+						new AttributeRelevantIndividual("a1", new AttributeValueString("v1",
 								label))));
 				i.setPolarity(Polarity.True);
 				s.addSupportedInfon(i);
