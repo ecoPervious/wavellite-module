@@ -9,7 +9,7 @@ import java.util.Collection;
 
 import fi.uef.envi.wavellite.entity.core.Entity;
 import fi.uef.envi.wavellite.entity.core.EntityVisitor;
-import fi.uef.envi.wavellite.entity.core.base.AbstractEntityVisitor;
+import fi.uef.envi.wavellite.entity.core.base.EntityVisitorBase;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
@@ -72,7 +72,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return defaultNamespace;
 	}
 
-	private class ThisEntityVisitor extends AbstractEntityVisitor {
+	private class ThisEntityVisitor extends EntityVisitorBase {
 
 		@Override
 		public void visit(MeasurementResult entity) {
