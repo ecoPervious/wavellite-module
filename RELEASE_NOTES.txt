@@ -1,7 +1,7 @@
-0.1.0 Changes ()
+0.1.0 Changes (2014-01-28)
 --------------------------
 
-* ADDED: ModuleStoreNTriples
+* ADDED: ModuleStoreFile
 
 0.0.1 Changes (2013-11-08)
 --------------------------
