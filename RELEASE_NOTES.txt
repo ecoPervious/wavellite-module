@@ -1,6 +1,8 @@
 0.1.1 Changes (YYYY-MM-DD)
 --------------------------
 
+* MODIFIED: AbstractModuleStoreRdf was modified to consider SpatialLocation entities 
+
 0.1.0 Changes (2014-01-28)
 --------------------------
 
