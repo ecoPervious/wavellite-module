@@ -1,7 +1,11 @@
 0.1.1 Changes (YYYY-MM-DD)
 --------------------------
 
-* MODIFIED: AbstractModuleStoreRdf was modified to consider SpatialLocation entities 
+* MODIFIED: AbstractModuleStoreRdf was modified to consider SpatialLocation 
+entities
+* MODIFIED: AbstractModuleStoreRdf was modified to use geo and time entity
+representation classes. Further entities are now considered by the store module,
+e.g. Sensor, Property, Feature, ... 
 
 0.1.0 Changes (2014-01-28)
 --------------------------
