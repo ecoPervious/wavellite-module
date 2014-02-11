@@ -141,14 +141,7 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 			e.printStackTrace();
 		}
 
-		if (defaultNamespace == null)
-			defaultNamespace = "http://envi.uef.fi/wavellite";
-
 		this.defaultNamespace = defaultNamespace;
-
-		entityRepresentationSsn.setNamespace(defaultNamespace);
-		entityRepresentationQb.setNamespace(defaultNamespace);
-		entityRepresentationSto.setNamespace(defaultNamespace);
 	}
 
 	public String getProtocol() {

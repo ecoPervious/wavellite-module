@@ -53,6 +53,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected EntityRepresentationRdfQb entityRepresentationQb = new EntityRepresentationRdfQb();
 	protected EntityRepresentationRdfSto entityRepresentationSto = new EntityRepresentationRdfSto();
 	protected MeasurementResultTranslatorBase measurementResultConversion = new MeasurementResultTranslatorBase();
+	
+	private boolean isOpen = false;
 
 	private EntityVisitor entityVisitor = new ThisEntityVisitor();
 
@@ -61,16 +63,24 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 	public AbstractModuleStoreRdf(String ns) {
 		defaultNamespace = ns;
+	}
+
+	@Override
+	public void open() {
+		entityRepresentationGeo.setNamespace(defaultNamespace);
+		entityRepresentationTime.setNamespace(defaultNamespace);
+		entityRepresentationSsn.setNamespace(defaultNamespace);
+		entityRepresentationQb.setNamespace(defaultNamespace);
+		entityRepresentationSto.setNamespace(defaultNamespace);
 		
-		entityRepresentationGeo.setNamespace(ns);
-		entityRepresentationTime.setNamespace(ns);
-		entityRepresentationSsn.setNamespace(ns);
-		entityRepresentationQb.setNamespace(ns);
-		entityRepresentationSto.setNamespace(ns);
+		isOpen = true;
 	}
 
 	@Override
 	public void consider(Entity entity) {
+		if (!isOpen)
+			open();
+		
 		entity.accept(entityVisitor);
 	}
 

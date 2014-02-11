@@ -37,6 +37,8 @@ public interface ModuleStore extends Module<Entity> {
 
 	public String getNamespace();
 
+	public void open();
+	
 	public void close();
 
 }
