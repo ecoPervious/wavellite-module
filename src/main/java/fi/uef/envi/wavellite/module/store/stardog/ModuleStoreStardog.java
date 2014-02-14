@@ -8,14 +8,19 @@ package fi.uef.envi.wavellite.module.store.stardog;
 import java.util.Collections;
 import java.util.Set;
 
+import org.openrdf.model.Model;
 import org.openrdf.model.Namespace;
 import org.openrdf.model.Statement;
+import org.openrdf.model.impl.LinkedHashModel;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.QueryEvaluationException;
 
 import com.complexible.common.rdf.model.Namespaces;
 import com.complexible.stardog.StardogException;
 import com.complexible.stardog.api.Adder;
 import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
+import com.complexible.stardog.api.GraphQuery;
 import com.complexible.stardog.reasoning.api.ReasoningType;
 
 import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
@@ -192,6 +197,24 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 		} catch (StardogException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public Model executeSparql(String sparql) {
+		Model ret = new LinkedHashModel();
+		
+		try {
+			GraphQuery graphQuery = conn.graph(sparql);
+			GraphQueryResult result = graphQuery.execute();
+			
+			while (result.hasNext()) {
+				ret.add(result.next());
+			}
+		} catch (StardogException | QueryEvaluationException e) {
+			throw new RuntimeException(e);	
+		}
+		
+		return ret;
 	}
 
 	@Override

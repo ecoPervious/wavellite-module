@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Set;
 
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -35,6 +36,7 @@ import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
  * @author Markus Stocker
  */
 
+/** @deprecated use MOduleStoreSail instead */ 
 public class ModuleStoreFile extends AbstractModuleStoreRdf {
 
 	private FileOutputStream outputStream;
@@ -81,6 +83,11 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 		} catch (RDFHandlerException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public Model executeSparql(String sparql) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

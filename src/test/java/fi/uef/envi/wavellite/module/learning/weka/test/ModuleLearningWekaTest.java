@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-package fi.uef.envi.wavellite.module.learning.base.test;
+package fi.uef.envi.wavellite.module.learning.weka.test;
 
 import java.util.Collection;
 import java.util.HashSet;
