@@ -6,6 +6,8 @@ entities
 * MODIFIED: AbstractModuleStoreRdf was modified to use geo and time entity
 representation classes. Further entities are now considered by the store module,
 e.g. Sensor, Property, Feature, ... 
+* ADDED: ModuleStoreSail, mostly used for testing but could be interesting also
+for persistent storage (as a potential alternative to Stardog)
 
 0.1.0 Changes (2014-01-28)
 --------------------------
