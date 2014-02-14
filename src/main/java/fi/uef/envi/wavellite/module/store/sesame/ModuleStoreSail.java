@@ -144,7 +144,7 @@ public class ModuleStoreSail extends AbstractModuleStoreRdf {
 				| QueryEvaluationException e) {
 			throw new RuntimeException(e);
 		}
-
+		
 		return ret;
 	}
 

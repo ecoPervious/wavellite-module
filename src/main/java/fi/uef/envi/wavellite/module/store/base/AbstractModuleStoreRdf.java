@@ -136,20 +136,31 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			return Iterators.emptyIterator();
 		}
 
-		String observedBy = "OPTIONAL { ?observationId ssn:observedBy ?sensorId }";
-		String observedProperty = "OPTIONAL { ?observationId ssn:observedProperty ?propertyId }";
-		String featureOfInterest = "OPTIONAL { ?observationId ssn:featureOfInterest ?featureId }";
+		String sensorId = "?sensorId";
+		String propertyId = "?propertyId";
+		String featureId = "?featureId";
+		String observedBy = "OPTIONAL { ?observationId ssn:observedBy "
+				+ sensorId + " }";
+		String observedProperty = "OPTIONAL { ?observationId ssn:observedProperty "
+				+ propertyId + " }";
+		String featureOfInterest = "OPTIONAL { ?observationId ssn:featureOfInterest "
+				+ featureId + " }";
 
 		// URIs are assumed here!
-		if (sensor != null)
-			observedBy = "?observationId ssn:observedBy <" + sensor.getId()
-					+ ">";
-		if (property != null)
-			observedProperty = "?observationId ssn:observedProperty <"
-					+ property.getId() + ">";
-		if (feature != null)
-			featureOfInterest = "?observationId ssn:featureOfInterest <"
-					+ feature.getId() + ">";
+		if (sensor != null) {
+			sensorId = "<" + sensor.getId() + ">";
+			observedBy = "?observationId ssn:observedBy " + sensorId;
+		}
+		if (property != null) {
+			propertyId = "<" + property.getId() + ">";
+			observedProperty = "?observationId ssn:observedProperty "
+					+ propertyId;
+		}
+		if (feature != null) {
+			featureId = "<" + feature.getId() + ">";
+			featureOfInterest = "?observationId ssn:featureOfInterest "
+					+ featureId;
+		}
 
 		TemporalLocationDateTime start = interval.getStart();
 		TemporalLocationDateTime end = interval.getEnd();
@@ -203,6 +214,15 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		String q = prefix
 				+ "construct {"
 				+ "?observationId rdf:type woe:SensorObservation ."
+				+ "?observationId ssn:observedBy "
+				+ sensorId
+				+ " ."
+				+ "?observationId ssn:observedProperty "
+				+ propertyId
+				+ " ."
+				+ "?observationId ssn:featureOfInterest "
+				+ featureId
+				+ " ."
 				+ "} where {"
 				+ "?observationId rdf:type woe:SensorObservation ."
 				+ observedBy
