@@ -23,7 +23,9 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.XMLSchema;
 
 import com.google.common.collect.Iterators;
@@ -50,6 +52,7 @@ import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfTime;
 import fi.uef.envi.wavellite.vocabulary.DUL;
+import fi.uef.envi.wavellite.vocabulary.GeoSPARQL;
 import fi.uef.envi.wavellite.vocabulary.SSN;
 import fi.uef.envi.wavellite.vocabulary.Time;
 import fi.uef.envi.wavellite.vocabulary.WOE;
@@ -88,10 +91,6 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			.withOffsetParsed();
 	private static final Logger log = Logger
 			.getLogger(AbstractModuleStoreRdf.class.getName());
-	private static final String prefix = "prefix woe: <" + WOE.ns
-			+ "#> prefix ssn: <" + SSN.ns + "#> prefix time: <" + Time.ns
-			+ "#> prefix dul: <" + DUL.ns + "#> prefix xsd: <"
-			+ XMLSchema.NAMESPACE + "> ";
 
 	public AbstractModuleStoreRdf() {
 	}
@@ -139,27 +138,27 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		String sensorId = "?sensorId";
 		String propertyId = "?propertyId";
 		String featureId = "?featureId";
-		String observedBy = "OPTIONAL { ?observationId ssn:observedBy "
-				+ sensorId + " }";
-		String observedProperty = "OPTIONAL { ?observationId ssn:observedProperty "
-				+ propertyId + " }";
-		String featureOfInterest = "OPTIONAL { ?observationId ssn:featureOfInterest "
-				+ featureId + " }";
+		String observedBy = "OPTIONAL { ?observationId <" + SSN.observedBy
+				+ "> " + sensorId + " }";
+		String observedProperty = "OPTIONAL { ?observationId <"
+				+ SSN.observedProperty + "> " + propertyId + " }";
+		String featureOfInterest = "OPTIONAL { ?observationId <"
+				+ SSN.featureOfInterest + "> " + featureId + " }";
 
 		// URIs are assumed here!
 		if (sensor != null) {
 			sensorId = "<" + sensor.getId() + ">";
-			observedBy = "?observationId ssn:observedBy " + sensorId;
+			observedBy = "?observationId <" + SSN.observedBy + "> " + sensorId;
 		}
 		if (property != null) {
 			propertyId = "<" + property.getId() + ">";
-			observedProperty = "?observationId ssn:observedProperty "
+			observedProperty = "?observationId <" + SSN.observedProperty + "> "
 					+ propertyId;
 		}
 		if (feature != null) {
 			featureId = "<" + feature.getId() + ">";
-			featureOfInterest = "?observationId ssn:featureOfInterest "
-					+ featureId;
+			featureOfInterest = "?observationId <" + SSN.featureOfInterest
+					+ "> " + featureId;
 		}
 
 		TemporalLocationDateTime start = interval.getStart();
@@ -211,36 +210,135 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		String from = dtf.print(interval.getStart().getValue());
 		String to = dtf.print(interval.getEnd().getValue());
 
-		String q = prefix
-				+ "construct {"
-				+ "?observationId rdf:type woe:SensorObservation ."
-				+ "?observationId ssn:observedBy "
-				+ sensorId
-				+ " ."
-				+ "?observationId ssn:observedProperty "
-				+ propertyId
-				+ " ."
-				+ "?observationId ssn:featureOfInterest "
-				+ featureId
-				+ " ."
-				+ "} where {"
-				+ "?observationId rdf:type woe:SensorObservation ."
-				+ observedBy
-				+ " ."
-				+ observedProperty
-				+ " ."
-				+ featureOfInterest
-				+ " ."
-				+ "?observationId ssn:observationResultTime ?timePointId ."
-				+ "?timePointId time:inXSDDateTime ?dateTime ."
-				+ "?observationId ssn:observationResult ?sensorOutputId ."
-				+ "?sensorOutputId dul:hasRegion ?observationValueId ."
-				+ "?observationValueId dul:hasRegionDataValue ?observationValue ."
-				+ " FILTER (?dateTime >= \"" + from
-				+ "\"^^xsd:dateTime && ?dateTime <= \"" + to
-				+ "\"^^xsd:dateTime) " + "}";
+		StringBuffer sb = new StringBuffer();
 
-		return createSensorObservations(executeSparql(q));
+		sb.append("construct {");
+		sb.append("?observationId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.SensorObservation + "> .");
+		sb.append("?observationId <" + SSN.observedBy + "> " + sensorId + " .");
+		sb.append(sensorId + " <" + RDF.TYPE.stringValue() + "> <" + SSN.Sensor
+				+ "> .");
+		sb.append("?observationId <" + SSN.observedProperty + "> " + propertyId
+				+ " .");
+		sb.append(propertyId + " <" + RDF.TYPE.stringValue() + "> <"
+				+ SSN.Property + "> .");
+		sb.append("?observationId <" + SSN.featureOfInterest + "> " + featureId
+				+ " .");
+		sb.append(featureId + " <" + RDF.TYPE.stringValue() + "> <"
+				+ SSN.FeatureOfInterest + "> .");
+		sb.append("?observationId <" + SSN.observationResultTime
+				+ "> ?temporalLocationId .");
+		sb.append("?temporalLocationId <" + RDF.TYPE.stringValue()
+				+ "> ?temporalLocationType .");
+		// If result time is a time point
+		sb.append("?temporalLocationId <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		// If result time is a time interval
+		sb.append("?temporalLocationId <" + Time.hasBeginning
+				+ "> ?beginningId .");
+		sb.append("?temporalLocationId <" + Time.hasEnd + "> ?endId .");
+		sb.append("?beginningId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimePoint + "> .");
+		sb.append("?beginningId <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		sb.append("?endId <" + RDF.TYPE.stringValue() + "> <" + WOE.TimePoint
+				+ "> .");
+		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
+		sb.append("?observationId <" + SSN.observationResult
+				+ "> ?sensorOutputId .");
+		sb.append("?sensorOutputId <" + RDF.TYPE.stringValue() + "> <"
+				+ SSN.SensorOutput + "> .");
+		sb.append("?sensorOutputId <" + DUL.hasRegion
+				+ "> ?observationValueId .");
+		sb.append("?observationValueId <" + RDF.TYPE.stringValue() + "> <"
+				+ SSN.ObservationValue + "> .");
+		sb.append("?observationValueId <" + DUL.hasRegionDataValue
+				+ "> ?observationValue .");
+		sb.append("?observationId <" + WOE.observationResultLocation
+				+ "> ?spatialLocationId .");
+		sb.append("?spatialLocationId <" + RDF.TYPE.stringValue()
+				+ "> ?spatialLocationType .");
+		// If spatial location is spatial place
+		sb.append("?spatialLocationId <" + RDFS.LABEL.stringValue()
+				+ "> ?spatialLocationLabel .");
+		sb.append("?spatialLocationId <" + OWL.SAMEAS.stringValue()
+				+ "> ?spatialLocationSameAs .");
+		// If spatial location is spatial region
+		sb.append("?spatialLocationId <" + GeoSPARQL.hasGeometry
+				+ "> ?geometryId .");
+		sb.append("?geometryId <" + RDF.TYPE.stringValue()
+				+ "> ?geometryType .");
+		sb.append("?geometryId <" + GeoSPARQL.asWKT + "> ?wktLiteral .");
+		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
+		sb.append("} where {");
+		sb.append("?observationId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.SensorObservation + "> .");
+		sb.append(observedBy + " .");
+		sb.append(observedProperty + " .");
+		sb.append(featureOfInterest + " .");
+		sb.append("?observationId <" + SSN.observationResultTime
+				+ "> ?temporalLocationId .");
+		sb.append("?temporalLocationId <" + RDF.TYPE.stringValue()
+				+ "> ?temporalLocationType .");
+		sb.append("{");
+		sb.append("?temporalLocationId <" + Time.hasBeginning
+				+ "> ?beginningId .");
+		sb.append("?temporalLocationId <" + Time.hasEnd + "> ?endId .");
+		sb.append("?beginningId <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
+		sb.append("}");
+		sb.append(" UNION ");
+		sb.append("{");
+		sb.append("?temporalLocationId <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		sb.append("?temporalLocationId <" + Time.inXSDDateTime
+				+ "> ?endDateTime .");
+		sb.append("}");
+		sb.append("OPTIONAL {");
+		sb.append("?observationId <" + SSN.observationResult
+				+ "> ?sensorOutputId .");
+		sb.append("?sensorOutputId <" + DUL.hasRegion
+				+ "> ?observationValueId .");
+		sb.append("?observationValueId <" + DUL.hasRegionDataValue
+				+ "> ?observationValue .");
+		sb.append("}");
+		sb.append("OPTIONAL {");
+		sb.append("?observationId <" + WOE.observationResultLocation
+				+ ">  ?spatialLocationId .");
+		sb.append("?spatialLocationId <" + RDF.TYPE.stringValue()
+				+ "> ?spatialLocationType .");
+		sb.append("{");
+		sb.append("?spatialLocationId <" + RDFS.LABEL.stringValue()
+				+ "> ?spatialLocationLabel .");
+		sb.append("?spatialLocationId <" + OWL.SAMEAS.stringValue()
+				+ "> ?spatialLocationSameAs .");
+		sb.append("}");
+		sb.append(" UNION ");
+		sb.append("{");
+		sb.append("?spatialLocationId <" + GeoSPARQL.hasGeometry
+				+ "> ?geometryId .");
+		sb.append("?geometryId <" + RDF.TYPE.stringValue()
+				+ "> ?geometryType .");
+		sb.append("{");
+		sb.append("?geometryId <" + GeoSPARQL.asWKT + "> ?wktLiteral .");
+		sb.append("}");
+		sb.append(" UNION ");
+		sb.append("{");
+		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
+		sb.append("}");
+		sb.append("}");
+		sb.append("}");
+		sb.append(" FILTER (");
+		sb.append("?beginningDateTime >= \"" + from + "\"^^<"
+				+ XMLSchema.DATETIME + ">");
+		sb.append(" && ");
+		sb.append("?endDateTime <= \"" + to + "\"^^<" + XMLSchema.DATETIME
+				+ ">");
+		sb.append(")");
+		sb.append("}");
+
+		return createSensorObservations(executeSparql(sb.toString()));
 	}
 
 	protected abstract Model executeSparql(String sparql);
