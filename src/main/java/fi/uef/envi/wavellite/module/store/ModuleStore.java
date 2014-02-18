@@ -15,6 +15,10 @@ import fi.uef.envi.wavellite.entity.core.Feature;
 import fi.uef.envi.wavellite.entity.core.Property;
 import fi.uef.envi.wavellite.entity.core.Sensor;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationInterval;
+import fi.uef.envi.wavellite.entity.derivation.ComponentProperty;
+import fi.uef.envi.wavellite.entity.derivation.ComponentPropertyValue;
+import fi.uef.envi.wavellite.entity.derivation.Dataset;
+import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.module.Module;
 
@@ -40,10 +44,14 @@ public interface ModuleStore extends Module<Entity> {
 	public void store(Statement statement);
 
 	public void storeAll(Set<Statement> statements);
-	
+
 	public Iterator<SensorObservation> getSensorObservations(Sensor sensor,
 			Property property, Feature feature,
 			TemporalLocationInterval interval);
+
+	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset,
+			ComponentProperty property, ComponentPropertyValue from,
+			ComponentPropertyValue to);
 
 	public String getNamespace();
 

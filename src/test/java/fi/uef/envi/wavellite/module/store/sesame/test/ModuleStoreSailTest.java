@@ -23,17 +23,24 @@ import fi.uef.envi.wavellite.entity.core.base.SpatialGeometryPoint;
 import fi.uef.envi.wavellite.entity.core.base.SpatialLocationRegion;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationDateTime;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationInterval;
+import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
+import fi.uef.envi.wavellite.entity.derivation.base.ComponentPropertyValueTemporalLocation;
+import fi.uef.envi.wavellite.entity.derivation.base.DatasetObservationBase;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.observation.base.ObservationValueDouble;
 import fi.uef.envi.wavellite.entity.observation.base.SensorObservationBase;
 import fi.uef.envi.wavellite.entity.observation.base.SensorOutputBase;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.module.store.sesame.ModuleStoreSail;
+import fi.uef.envi.wavellite.vocabulary.SDMX;
 import static fi.uef.envi.wavellite.entity.core.EntityFactory.sensor;
 import static fi.uef.envi.wavellite.entity.core.EntityFactory.property;
 import static fi.uef.envi.wavellite.entity.core.EntityFactory.feature;
 import static fi.uef.envi.wavellite.entity.core.EntityFactory.interval;
 import static fi.uef.envi.wavellite.entity.core.EntityFactory.dateTime;
+import static fi.uef.envi.wavellite.entity.core.EntityFactory.dataset;
+import static fi.uef.envi.wavellite.entity.core.EntityFactory.componentPropertyValue;
+import static fi.uef.envi.wavellite.entity.core.EntityFactory.componentProperty;
 
 /**
  * <p>
@@ -310,7 +317,7 @@ public class ModuleStoreSailTest {
 						dateTime(2014, 2, 15, 0, 0, 0)));
 
 		List<SensorObservation> a = Iterators.asList(it);
-		
+
 		List<SensorObservation> e = new ArrayList<SensorObservation>();
 
 		SensorObservation o2 = new SensorObservationBase(
@@ -321,12 +328,58 @@ public class ModuleStoreSailTest {
 		o2.setTemporalLocation(new TemporalLocationDateTime(
 				"http://example.org#tl1", dtf
 						.parseDateTime("2014-02-14T00:00:00.000+02:00")));
-		o2.setSpatialLocation(new SpatialLocationRegion("http://example.org#sl1",
-				new SpatialGeometryPoint("http://example.org#p1", p1)));
+		o2.setSpatialLocation(new SpatialLocationRegion(
+				"http://example.org#sl1", new SpatialGeometryPoint(
+						"http://example.org#p1", p1)));
 		e.add(o2);
 
 		assertEquals(e, a);
 
 		store.close();
 	}
+
+	@Test
+	public void test8() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"),
+				componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty(SDMX.Dimension.timePeriod),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-10T00:00:00.000+02:00"))),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-15T00:00:00.000+02:00"))));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+
+		DatasetObservation o2 = new DatasetObservationBase(
+				"http://example.org#o1");
+		o2.setDataset(dataset("http://example.org#d1"));
+		o2.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o2.addComponent(componentProperty("http://example.org#cp1"),
+				componentPropertyValue(0.0));
+		e.add(o2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
 }

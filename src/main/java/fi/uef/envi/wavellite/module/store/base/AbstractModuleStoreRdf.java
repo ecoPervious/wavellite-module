@@ -7,10 +7,12 @@ package fi.uef.envi.wavellite.module.store.base;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +41,8 @@ import fi.uef.envi.wavellite.entity.core.SpatialLocation;
 import fi.uef.envi.wavellite.entity.core.base.EntityVisitorBase;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationDateTime;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationInterval;
+import fi.uef.envi.wavellite.entity.derivation.ComponentProperty;
+import fi.uef.envi.wavellite.entity.derivation.ComponentPropertyValue;
 import fi.uef.envi.wavellite.entity.derivation.Dataset;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
@@ -53,6 +57,7 @@ import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfTime;
 import fi.uef.envi.wavellite.vocabulary.DUL;
 import fi.uef.envi.wavellite.vocabulary.GeoSPARQL;
+import fi.uef.envi.wavellite.vocabulary.QB;
 import fi.uef.envi.wavellite.vocabulary.SSN;
 import fi.uef.envi.wavellite.vocabulary.Time;
 import fi.uef.envi.wavellite.vocabulary.WOE;
@@ -97,6 +102,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 	public AbstractModuleStoreRdf(String defaultNamespace) {
 		this.defaultNamespace = defaultNamespace;
+	}
+
+	@Override
+	public String getNamespace() {
+		return defaultNamespace;
 	}
 
 	@Override
@@ -341,14 +351,112 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return createSensorObservations(executeSparql(sb.toString()));
 	}
 
-	protected abstract Model executeSparql(String sparql);
-
 	@Override
-	public String getNamespace() {
-		return defaultNamespace;
+	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset,
+			ComponentProperty property, ComponentPropertyValue from,
+			ComponentPropertyValue to) {
+		if (dataset == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [dataset = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		if (property == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [property = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		if (from == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [from = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		if (to == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [to = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		String datasetId = dataset.getId();
+		String propertyId = property.getId();
+
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("construct {");
+		sb.append("?observationId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.DatasetObservation + "> .");
+		sb.append("?observationId <" + QB.dataSet + "> <" + datasetId + "> .");
+		sb.append("<" + datasetId + "> <" + RDF.TYPE.stringValue() + "> <"
+				+ QB.DataSet + "> .");
+		sb.append("?observationId ?componentProperty ?componentPropertyValue .");
+		// This seems not to work, perhaps because of mixing ABox/TBox
+		// sb.append("?componentProperty <" + RDF.TYPE.stringValue() + "> <"
+		// + QB.ComponentProperty + "> .");
+		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
+				+ "> ?temporalLocationType .");
+		// If result time is a time point
+		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		// If result time is a time interval
+		sb.append("?componentPropertyValue <" + Time.hasBeginning
+				+ "> ?beginningId .");
+		sb.append("?componentPropertyValue <" + Time.hasEnd + "> ?endId .");
+		sb.append("?beginningId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimePoint + "> .");
+		sb.append("?beginningId <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		sb.append("?endId <" + RDF.TYPE.stringValue() + "> <" + WOE.TimePoint
+				+ "> .");
+		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
+		sb.append("} where {");
+		sb.append("?observationId <" + QB.dataSet + "> <" + datasetId + "> .");
+		sb.append("?observationId ?componentProperty ?componentPropertyValue .");
+		// Match the optional temporal location that may be the component
+		// property value
+		sb.append("OPTIONAL {");
+		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
+				+ "> ?temporalLocationType .");
+		sb.append("{");
+		sb.append("?componentPropertyValue <" + Time.hasBeginning
+				+ "> ?beginningId .");
+		sb.append("?componentPropertyValue <" + Time.hasEnd + "> ?endId .");
+		sb.append("?beginningId <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
+		sb.append("}");
+		sb.append(" UNION ");
+		sb.append("{");
+		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
+				+ "> ?beginningDateTime .");
+		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
+				+ "> ?endDateTime .");
+		sb.append("}");
+		// sb.append(" FILTER (");
+		// sb.append("?beginningDateTime >= \""
+		// + dtf.print(from.getValueAsTemporalLocation()
+		// .getValueAsDateTime()) + "\"^^<" + XMLSchema.DATETIME
+		// + ">");
+		// sb.append(" && ");
+		// sb.append("?endDateTime <= \""
+		// + dtf.print(to.getValueAsTemporalLocation()
+		// .getValueAsDateTime()) + "\"^^<" + XMLSchema.DATETIME
+		// + ">");
+		// sb.append(")");
+		sb.append("}");
+		sb.append("}");
+
+		return createDatasetObservations(executeSparql(sb.toString()));
 	}
 
-	private Iterator<SensorObservation> createSensorObservations(Model model) {
+	protected abstract Model executeSparql(String sparql);
+
+	protected Iterator<SensorObservation> createSensorObservations(Model model) {
 		List<SensorObservation> ret = new ArrayList<SensorObservation>();
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
@@ -365,6 +473,27 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return ret.iterator();
 	}
 
+	protected Iterator<DatasetObservation> createDatasetObservations(Model model) {
+		List<DatasetObservation> ret = new ArrayList<DatasetObservation>();
+
+		Iterator<Statement> it = model.filter(null, RDF.TYPE,
+				vf.createURI(WOE.DatasetObservation)).iterator();
+
+		while (it.hasNext()) {
+			Statement statement = it.next();
+			Resource subject = statement.getSubject();
+			// This set is concurrent
+			Set<Statement> statements = Collections
+					.newSetFromMap(new ConcurrentHashMap<Statement, Boolean>());
+			getStatements(model, subject, statements);
+			// See comment in construct query for dataset observations
+			inferComponentProperties(statements);
+			ret.add(entityRepresentationQb.createDatasetObservation(statements));
+		}
+
+		return ret.iterator();
+	}
+
 	private void getStatements(Model model, Resource subject,
 			Set<Statement> statements) {
 		Iterator<Statement> it = model.filter(subject, null, null).iterator();
@@ -376,6 +505,42 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			if (statement.getObject() instanceof URI)
 				getStatements(model, (Resource) statement.getObject(),
 						statements);
+		}
+	}
+
+	private void inferComponentProperties(Set<Statement> statements) {
+		for (Statement statement : statements) {
+			URI p = statement.getPredicate();
+
+			// TODO This list doesn't include all properties that are not
+			// component properties
+			if (p.equals(RDF.TYPE))
+				continue;
+			if (p.equals(QB.asURI.dataSet))
+				continue;
+			if (p.equals(QB.asURI.component))
+				continue;
+			if (p.equals(QB.asURI.structure))
+				continue;
+			if (p.equals(Time.asURI.inXSDDateTime))
+				continue;
+			if (p.equals(Time.asURI.hasBeginning))
+				continue;
+			if (p.equals(Time.asURI.hasEnd))
+				continue;
+			if (p.equals(GeoSPARQL.asURI.hasGeometry))
+				continue;
+			if (p.equals(GeoSPARQL.asURI.asWKT))
+				continue;
+			if (p.equals(GeoSPARQL.asURI.asGML))
+				continue;
+
+			statements.add(vf.createStatement(p, RDF.TYPE,
+					QB.asURI.ComponentProperty));
+
+			if (log.isLoggable(Level.INFO))
+				log.info("Predicate inferred to be a component property [p = "
+						+ p + "]");
 		}
 	}
 
