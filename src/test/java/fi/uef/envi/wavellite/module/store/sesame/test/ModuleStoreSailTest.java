@@ -35,6 +35,11 @@ import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.observation.base.ObservationValueDouble;
 import fi.uef.envi.wavellite.entity.observation.base.SensorObservationBase;
 import fi.uef.envi.wavellite.entity.observation.base.SensorOutputBase;
+import fi.uef.envi.wavellite.entity.situation.ElementaryInfon;
+import fi.uef.envi.wavellite.entity.situation.Situation;
+import fi.uef.envi.wavellite.entity.situation.base.ElementaryInfonBase;
+import fi.uef.envi.wavellite.entity.situation.base.RelationBase;
+import fi.uef.envi.wavellite.entity.situation.base.SituationBase;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.module.store.sesame.ModuleStoreSail;
 import fi.uef.envi.wavellite.vocabulary.SDMX;
@@ -1001,6 +1006,32 @@ public class ModuleStoreSailTest {
 
 		assertTrue(a.isEmpty());
 
+		store.close();
+	}
+	
+	@Test
+	public void test14a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+		
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		store.consider(s1);
+		
+		Iterator<Situation> it = store.getSituations(new RelationBase("http://example.org#r1"));
+		
+		List<Situation> a = Iterators.asList(it);
+		
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		e.add(s2);
+		
+		assertEquals(e, a);
+		
 		store.close();
 	}
 

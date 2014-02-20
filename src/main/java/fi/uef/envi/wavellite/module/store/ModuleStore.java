@@ -20,6 +20,8 @@ import fi.uef.envi.wavellite.entity.derivation.ComponentPropertyValue;
 import fi.uef.envi.wavellite.entity.derivation.Dataset;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
+import fi.uef.envi.wavellite.entity.situation.Relation;
+import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.module.Module;
 
 /**
@@ -52,6 +54,8 @@ public interface ModuleStore extends Module<Entity> {
 	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset,
 			ComponentProperty property, ComponentPropertyValue from,
 			ComponentPropertyValue to);
+	
+	public Iterator<Situation> getSituations(Relation relation);
 
 	public String getNamespace();
 

@@ -48,6 +48,7 @@ import fi.uef.envi.wavellite.entity.derivation.Dataset;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.measurement.MeasurementResult;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
+import fi.uef.envi.wavellite.entity.situation.Relation;
 import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.operator.translation.base.MeasurementResultTranslatorBase;
@@ -60,6 +61,7 @@ import fi.uef.envi.wavellite.vocabulary.DUL;
 import fi.uef.envi.wavellite.vocabulary.GeoSPARQL;
 import fi.uef.envi.wavellite.vocabulary.QB;
 import fi.uef.envi.wavellite.vocabulary.SSN;
+import fi.uef.envi.wavellite.vocabulary.STO;
 import fi.uef.envi.wavellite.vocabulary.Time;
 import fi.uef.envi.wavellite.vocabulary.WOE;
 
@@ -565,6 +567,37 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return createDatasetObservations(executeSparql(sb.toString()));
 	}
 
+	public Iterator<Situation> getSituations(Relation relation) {
+		if (relation == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [relation = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		String relationId = relation.getId();
+		
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("construct {");
+		sb.append("?situationId <" + RDF.TYPE.stringValue() + "> <"
+				+ STO.Situation + "> .");
+		sb.append("?situationId <" + STO.supportedInfon
+				+ "> ?elementaryInfonId .");
+		sb.append("?elementartyInfonId <" + RDF.TYPE.stringValue() + "> <"
+				+ STO.ElementaryInfon + "> .");
+		sb.append("?elementaryInfonId <" + STO.relation + "> <" + relationId + "> .");
+		sb.append("} where {");
+		sb.append("?situationId <" + RDF.TYPE.stringValue() + "> <"
+				+ STO.Situation + "> .");
+		sb.append("?situationId <" + STO.supportedInfon
+				+ "> ?elementaryInfonId .");
+		sb.append("?elementaryInfonId <" + STO.relation + "> <" + relationId + "> .");
+		sb.append("}");
+
+		return createSituations(executeSparql(sb.toString()));
+	}
+
 	protected abstract Model executeSparql(String sparql);
 
 	protected Iterator<SensorObservation> createSensorObservations(Model model) {
@@ -605,6 +638,25 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return ret.iterator();
 	}
 
+	protected Iterator<Situation> createSituations(Model model) {
+		List<Situation> ret = new ArrayList<Situation>();
+
+		Iterator<Statement> it = model.filter(null, RDF.TYPE,
+				vf.createURI(STO.Situation)).iterator();
+
+		while (it.hasNext()) {
+			Statement statement = it.next();
+			Resource subject = statement.getSubject();
+			// This set is concurrent
+			Set<Statement> statements = Collections
+					.newSetFromMap(new ConcurrentHashMap<Statement, Boolean>());
+			getStatements(model, subject, statements);
+			ret.add(entityRepresentationSto.createSituation(statements));
+		}
+
+		return ret.iterator();
+	}
+
 	private void getStatements(Model model, Resource subject,
 			Set<Statement> statements) {
 		Iterator<Statement> it = model.filter(subject, null, null).iterator();
@@ -624,7 +676,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		for (Statement statement : statements) {
 			if (!statement.getSubject().equals(observation))
 				continue;
-			
+
 			URI p = statement.getPredicate();
 
 			// TODO it may not be safe to assume that whatever property not
