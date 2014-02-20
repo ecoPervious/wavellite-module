@@ -13,6 +13,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.openrdf.util.iterators.Iterators;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -65,7 +66,7 @@ public class ModuleStoreSailTest {
 			.withOffsetParsed();
 
 	@Test
-	public void test1() {
+	public void test1a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
 
 		SensorObservation o1 = new SensorObservationBase("o1");
@@ -94,6 +95,31 @@ public class ModuleStoreSailTest {
 		e.add(o2);
 
 		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test1b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		SensorObservation o1 = new SensorObservationBase("o1");
+		o1.setSensor(sensor("s1"));
+		o1.setTemporalLocation(new TemporalLocationDateTime("tl1", dtf
+				.parseDateTime("2014-02-14T00:00:00.000+02:00")));
+
+		store.consider(o1);
+
+		Iterator<SensorObservation> it = store.getSensorObservations(
+				sensor("http://example.org#s1"),
+				null,
+				null,
+				interval(dateTime(2014, 2, 15, 0, 0, 0),
+						dateTime(2014, 2, 20, 0, 0, 0)));
+
+		List<SensorObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
 
 		store.close();
 	}
@@ -209,7 +235,7 @@ public class ModuleStoreSailTest {
 	}
 
 	@Test
-	public void test5() {
+	public void test5a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
 
 		SensorObservation o1 = new SensorObservationBase("o1");
@@ -244,6 +270,90 @@ public class ModuleStoreSailTest {
 		e.add(o2);
 
 		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test5b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		SensorObservation o1 = new SensorObservationBase("o1");
+		o1.setSensor(sensor("s1"));
+		o1.setTemporalLocation(new TemporalLocationInterval("tl1",
+				new TemporalLocationDateTime("dt1", dtf
+						.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+				new TemporalLocationDateTime("dt2", dtf
+						.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+
+		store.consider(o1);
+
+		Iterator<SensorObservation> it = store.getSensorObservations(
+				sensor("http://example.org#s1"),
+				null,
+				null,
+				interval(dateTime(2014, 2, 15, 0, 0, 0),
+						dateTime(2014, 2, 20, 0, 0, 0)));
+
+		List<SensorObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+
+		store.close();
+	}
+
+	@Test
+	public void test5c() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		SensorObservation o1 = new SensorObservationBase("o1");
+		o1.setSensor(sensor("s1"));
+		o1.setTemporalLocation(new TemporalLocationInterval("tl1",
+				new TemporalLocationDateTime("dt1", dtf
+						.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+				new TemporalLocationDateTime("dt2", dtf
+						.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+
+		store.consider(o1);
+
+		Iterator<SensorObservation> it = store.getSensorObservations(
+				sensor("http://example.org#s1"),
+				null,
+				null,
+				interval(dateTime(2014, 2, 13, 12, 0, 0),
+						dateTime(2014, 2, 14, 12, 0, 0)));
+
+		List<SensorObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+
+		store.close();
+	}
+
+	@Test
+	public void test5d() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		SensorObservation o1 = new SensorObservationBase("o1");
+		o1.setSensor(sensor("s1"));
+		o1.setTemporalLocation(new TemporalLocationInterval("tl1",
+				new TemporalLocationDateTime("dt1", dtf
+						.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+				new TemporalLocationDateTime("dt2", dtf
+						.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+
+		store.consider(o1);
+
+		Iterator<SensorObservation> it = store.getSensorObservations(
+				sensor("http://example.org#s1"),
+				null,
+				null,
+				interval(dateTime(2014, 2, 12, 12, 0, 0),
+						dateTime(2014, 2, 13, 12, 0, 0)));
+
+		List<SensorObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
 
 		store.close();
 	}
@@ -339,7 +449,7 @@ public class ModuleStoreSailTest {
 	}
 
 	@Test
-	public void test8() {
+	public void test8a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
 
 		DatasetObservation o1 = new DatasetObservationBase("o1");
@@ -349,8 +459,7 @@ public class ModuleStoreSailTest {
 				new ComponentPropertyValueTemporalLocation(
 						new TemporalLocationDateTime("dt1", dtf
 								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
-		o1.addComponent(componentProperty("cp1"),
-				componentPropertyValue(0.0));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
 		store.consider(o1);
 
 		Iterator<DatasetObservation> it = store.getDatasetObservations(
@@ -360,6 +469,332 @@ public class ModuleStoreSailTest {
 						.parseDateTime("2014-02-10T00:00:00.000+02:00"))),
 				componentPropertyValue(dateTime(dtf
 						.parseDateTime("2014-02-15T00:00:00.000+02:00"))));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+
+		DatasetObservation o2 = new DatasetObservationBase(
+				"http://example.org#o1");
+		o2.setDataset(dataset("http://example.org#d1"));
+		o2.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o2.addComponent(componentProperty("http://example.org#cp1"),
+				componentPropertyValue(0.0));
+		e.add(o2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test8b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty(SDMX.Dimension.timePeriod),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-15T00:00:00.000+02:00"))),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-20T00:00:00.000+02:00"))));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+
+		store.close();
+	}
+
+	@Test
+	public void test9a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationInterval(
+								"tl1",
+								new TemporalLocationDateTime(
+										"dt1",
+										dtf.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+								new TemporalLocationDateTime(
+										"dt2",
+										dtf.parseDateTime("2014-02-14T00:00:00.000+02:00")))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty(SDMX.Dimension.timePeriod),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-10T00:00:00.000+02:00"))),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-15T00:00:00.000+02:00"))));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+
+		DatasetObservation o2 = new DatasetObservationBase(
+				"http://example.org#o1");
+		o2.setDataset(dataset("http://example.org#d1"));
+		o2.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationInterval(
+								"http://example.org#tl1",
+								new TemporalLocationDateTime(
+										"http://example.org#dt1",
+										dtf.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+								new TemporalLocationDateTime(
+										"http://example.org#dt2",
+										dtf.parseDateTime("2014-02-14T00:00:00.000+02:00")))));
+		o2.addComponent(componentProperty("http://example.org#cp1"),
+				componentPropertyValue(0.0));
+		e.add(o2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test9b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationInterval(
+								"tl1",
+								new TemporalLocationDateTime(
+										"dt1",
+										dtf.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+								new TemporalLocationDateTime(
+										"dt2",
+										dtf.parseDateTime("2014-02-14T00:00:00.000+02:00")))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty(SDMX.Dimension.timePeriod),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-10T00:00:00.000+02:00"))),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-13T12:00:00.000+02:00"))));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+
+		store.close();
+	}
+
+	@Test
+	public void test9c() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationInterval(
+								"tl1",
+								new TemporalLocationDateTime(
+										"dt1",
+										dtf.parseDateTime("2014-02-13T00:00:00.000+02:00")),
+								new TemporalLocationDateTime(
+										"dt2",
+										dtf.parseDateTime("2014-02-14T00:00:00.000+02:00")))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty(SDMX.Dimension.timePeriod),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-13T12:00:00.000+02:00"))),
+				componentPropertyValue(dateTime(dtf
+						.parseDateTime("2014-02-15T00:00:00.000+02:00"))));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+
+		store.close();
+	}
+
+	@Test
+	public void test10a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty("http://example.org#cp1"),
+				componentPropertyValue(-1.0), componentPropertyValue(1.0));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+
+		DatasetObservation o2 = new DatasetObservationBase(
+				"http://example.org#o1");
+		o2.setDataset(dataset("http://example.org#d1"));
+		o2.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o2.addComponent(componentProperty("http://example.org#cp1"),
+				componentPropertyValue(0.0));
+		e.add(o2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+	
+	@Test
+	public void test10b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty("http://example.org#cp1"),
+				componentPropertyValue(1.0), componentPropertyValue(2.0));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+		
+		store.close();
+	}
+	
+	@Test
+	public void test11a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty("http://example.org#cp1"),
+				componentPropertyValue(-1), componentPropertyValue(1));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+
+		DatasetObservation o2 = new DatasetObservationBase(
+				"http://example.org#o1");
+		o2.setDataset(dataset("http://example.org#d1"));
+		o2.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o2.addComponent(componentProperty("http://example.org#cp1"),
+				componentPropertyValue(0));
+		e.add(o2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+	
+	@Test
+	public void test11b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty("http://example.org#cp1"),
+				componentPropertyValue(1), componentPropertyValue(2));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+		
+		store.close();
+	}
+	
+	@Test
+	public void test12() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
+				componentProperty("http://example.org#cp1"),
+				componentPropertyValue(-1), componentPropertyValue(1));
 
 		List<DatasetObservation> a = Iterators.asList(it);
 

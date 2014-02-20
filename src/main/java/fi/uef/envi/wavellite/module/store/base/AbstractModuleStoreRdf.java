@@ -38,6 +38,7 @@ import fi.uef.envi.wavellite.entity.core.Feature;
 import fi.uef.envi.wavellite.entity.core.Property;
 import fi.uef.envi.wavellite.entity.core.Sensor;
 import fi.uef.envi.wavellite.entity.core.SpatialLocation;
+import fi.uef.envi.wavellite.entity.core.TemporalLocation;
 import fi.uef.envi.wavellite.entity.core.base.EntityVisitorBase;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationDateTime;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationInterval;
@@ -383,6 +384,32 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			return Iterators.emptyIterator();
 		}
 
+		Object fromValue = from.getValue();
+		Object toValue = to.getValue();
+
+		if (fromValue == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [fromValue = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		if (toValue == null) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [toValue = null]");
+
+			return Iterators.emptyIterator();
+		}
+
+		if (!(fromValue.getClass().isInstance(toValue))) {
+			if (log.isLoggable(Level.SEVERE))
+				log.severe("Returned empty iterator [fromValue = "
+						+ fromValue.getClass().getName() + "; toValue = "
+						+ toValue.getClass().getName() + "]");
+
+			return Iterators.emptyIterator();
+		}
+
 		String datasetId = dataset.getId();
 		String propertyId = property.getId();
 
@@ -400,10 +427,10 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		// + QB.ComponentProperty + "> .");
 		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
 				+ "> ?temporalLocationType .");
-		// If result time is a time point
+		// If the component property value is a time point
 		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
-				+ "> ?beginningDateTime .");
-		// If result time is a time interval
+				+ "> ?dateTime .");
+		// If the component property value is a time interval
 		sb.append("?componentPropertyValue <" + Time.hasBeginning
 				+ "> ?beginningId .");
 		sb.append("?componentPropertyValue <" + Time.hasEnd + "> ?endId .");
@@ -417,12 +444,18 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("} where {");
 		sb.append("?observationId <" + QB.dataSet + "> <" + datasetId + "> .");
 		sb.append("?observationId ?componentProperty ?componentPropertyValue .");
-		// Match the optional temporal location that may be the component
-		// property value
-		sb.append("OPTIONAL {");
+		// If the component property value is a temporal location we need to
+		// resolve it; first the case for WOE.TimePoint, then for
+		// WOE.TimeInterval
+		sb.append(" optional {");
 		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
 				+ "> ?temporalLocationType .");
-		sb.append("{");
+		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
+				+ "> ?dateTime .");
+		sb.append("}");
+		sb.append(" optional {");
+		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
+				+ "> ?temporalLocationType .");
 		sb.append("?componentPropertyValue <" + Time.hasBeginning
 				+ "> ?beginningId .");
 		sb.append("?componentPropertyValue <" + Time.hasEnd + "> ?endId .");
@@ -430,24 +463,67 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ "> ?beginningDateTime .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
 		sb.append("}");
-		sb.append(" UNION ");
+		// The case in which the filtered property is for a time point
 		sb.append("{");
-		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
-				+ "> ?beginningDateTime .");
-		sb.append("?componentPropertyValue <" + Time.inXSDDateTime
-				+ "> ?endDateTime .");
-		sb.append("}");
-		// sb.append(" FILTER (");
-		// sb.append("?beginningDateTime >= \""
-		// + dtf.print(from.getValueAsTemporalLocation()
-		// .getValueAsDateTime()) + "\"^^<" + XMLSchema.DATETIME
-		// + ">");
-		// sb.append(" && ");
-		// sb.append("?endDateTime <= \""
-		// + dtf.print(to.getValueAsTemporalLocation()
-		// .getValueAsDateTime()) + "\"^^<" + XMLSchema.DATETIME
-		// + ">");
-		// sb.append(")");
+		sb.append("?observationId <" + propertyId
+				+ "> ?filteredComponentPropertyValue .");
+		if (from.getValue() instanceof TemporalLocation) {
+			sb.append("{");
+			sb.append("?filteredComponentPropertyValue <"
+					+ RDF.TYPE.stringValue() + "> <" + WOE.TimePoint + "> .");
+			sb.append("?filteredComponentPropertyValue <" + Time.inXSDDateTime
+					+ "> ?filteredBeginningDateTime .");
+			sb.append("?filteredComponentPropertyValue <" + Time.inXSDDateTime
+					+ "> ?filteredEndDateTime .");
+			sb.append("}");
+			sb.append(" union ");
+			sb.append("{");
+			sb.append("?filteredComponentPropertyValue <"
+					+ RDF.TYPE.stringValue() + "> <" + WOE.TimeInterval + "> .");
+			sb.append("?filteredComponentPropertyValue <" + Time.hasBeginning
+					+ "> ?filteredBeginningId .");
+			sb.append("?filteredComponentPropertyValue <" + Time.hasEnd
+					+ "> ?filteredEndId .");
+			sb.append("?filteredBeginningId <" + Time.inXSDDateTime
+					+ "> ?filteredBeginningDateTime .");
+			sb.append("?filteredEndId <" + Time.inXSDDateTime
+					+ "> ?filteredEndDateTime .");
+			sb.append("}");
+			sb.append(" filter (");
+			sb.append("?filteredBeginningDateTime >= \""
+					+ dtf.print(from.getValueAsTemporalLocation()
+							.getValueAsDateTime()) + "\"^^<"
+					+ XMLSchema.DATETIME + ">");
+			sb.append(" && ");
+			sb.append("?filteredEndDateTime <= \""
+					+ dtf.print(to.getValueAsTemporalLocation()
+							.getValueAsDateTime()) + "\"^^<"
+					+ XMLSchema.DATETIME + ">");
+			sb.append(")");
+		}
+		// The case in which the filtered property is for a double value
+		else if (fromValue instanceof Double
+				&& toValue instanceof Double) {
+			sb.append(" filter (");
+			sb.append("?filteredComponentPropertyValue >= \""
+					+ from.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE
+					+ ">");
+			sb.append(" && ");
+			sb.append("?filteredComponentPropertyValue <= \""
+					+ to.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE + ">");
+			sb.append(")");
+		}
+		// The case in which the filtered property is for a integer value
+		else if (fromValue instanceof Integer
+				&& toValue instanceof Integer) {
+			sb.append(" filter (");
+			sb.append("?filteredComponentPropertyValue >= \""
+					+ from.getValueAsInteger() + "\"^^<" + XMLSchema.INT + ">");
+			sb.append(" && ");
+			sb.append("?filteredComponentPropertyValue <= \""
+					+ to.getValueAsInteger() + "\"^^<" + XMLSchema.INT + ">");
+			sb.append(")");
+		}
 		sb.append("}");
 		sb.append("}");
 
