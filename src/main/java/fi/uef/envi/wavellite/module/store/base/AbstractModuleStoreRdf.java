@@ -539,8 +539,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			sb.append(")");
 		}
 		// The case in which the filtered property is for a double value
-		else if (fromValue instanceof Double
-				&& toValue instanceof Double) {
+		else if (fromValue instanceof Double && toValue instanceof Double) {
 			sb.append(" filter (");
 			sb.append("?filteredComponentPropertyValue >= \""
 					+ from.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE
@@ -551,8 +550,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			sb.append(")");
 		}
 		// The case in which the filtered property is for a integer value
-		else if (fromValue instanceof Integer
-				&& toValue instanceof Integer) {
+		else if (fromValue instanceof Integer && toValue instanceof Integer) {
 			sb.append(" filter (");
 			sb.append("?filteredComponentPropertyValue >= \""
 					+ from.getValueAsInteger() + "\"^^<" + XMLSchema.INT + ">");
@@ -600,7 +598,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 					.newSetFromMap(new ConcurrentHashMap<Statement, Boolean>());
 			getStatements(model, subject, statements);
 			// See comment in construct query for dataset observations
-			inferComponentProperties(statements);
+			inferComponentProperties(statements, subject);
 			ret.add(entityRepresentationQb.createDatasetObservation(statements));
 		}
 
@@ -621,35 +619,19 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		}
 	}
 
-	private void inferComponentProperties(Set<Statement> statements) {
+	private void inferComponentProperties(Set<Statement> statements,
+			Resource observation) {
 		for (Statement statement : statements) {
+			if (!statement.getSubject().equals(observation))
+				continue;
+			
 			URI p = statement.getPredicate();
 
-			// TODO This list doesn't include all properties that are not
-			// component properties
+			// TODO it may not be safe to assume that whatever property not
+			// listed here is a component property!
 			if (p.equals(RDF.TYPE))
 				continue;
 			if (p.equals(QB.asURI.dataSet))
-				continue;
-			if (p.equals(QB.asURI.component))
-				continue;
-			if (p.equals(QB.asURI.structure))
-				continue;
-			if (p.equals(Time.asURI.inXSDDateTime))
-				continue;
-			if (p.equals(Time.asURI.hasBeginning))
-				continue;
-			if (p.equals(Time.asURI.hasEnd))
-				continue;
-			if (p.equals(GeoSPARQL.asURI.hasGeometry))
-				continue;
-			if (p.equals(GeoSPARQL.asURI.asWKT))
-				continue;
-			if (p.equals(GeoSPARQL.asURI.asGML))
-				continue;
-			if (p.equals(RDFS.LABEL))
-				continue;
-			if (p.equals(OWL.SAMEAS))
 				continue;
 
 			statements.add(vf.createStatement(p, RDF.TYPE,
