@@ -17,7 +17,6 @@ import static fi.uef.envi.wavellite.entity.core.EntityFactory.sensorOutput;
 import static fi.uef.envi.wavellite.entity.core.EntityFactory.temporalLocation;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,13 +25,10 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.util.iterators.Iterators;
 
-import fi.uef.envi.wavellite.entity.core.base.TemporalLocationDateTime;
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
-import fi.uef.envi.wavellite.entity.derivation.base.ComponentPropertyValueTemporalLocation;
 import fi.uef.envi.wavellite.entity.derivation.base.DatasetObservationBase;
 import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.observation.base.SensorObservationBase;
@@ -64,84 +60,108 @@ public class ModuleStoreTest {
 	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
 			.withOffsetParsed();
 
+	private static double days = 0.01;
+	private static final DateTime start = dtf
+			.parseDateTime("2014-01-01T00:00:00.000+02:00");
+	private static final int queryTimeIntervalInSeconds = 50;
+	private static long loadTimeInSeconds = 0;
+
 	@BeforeClass
 	public static void beforeClass() {
-//		store = new ModuleStoreStardog("localhost", "test",
-//				"http://example.org#");
+//		 store = new ModuleStoreStardog("localhost", "test",
+//		 "http://example.org#");
 		store = new ModuleStoreSail("http://example.org#");
 
-		DateTime start = dtf.parseDateTime("2014-01-01T00:00:00.000+02:00");
+		long t1 = System.currentTimeMillis();
 
-		// Ten days
-		for (int i = 0; i < 240; i++) {
-			SensorObservation o = new SensorObservationBase();
-			o.setSensor(sensor("s1"));
-			o.setProperty(property("p1"));
-			o.setFeature(feature("f1"));
-			o.setSensorOutput(sensorOutput(0.0));
-			o.setTemporalLocation(temporalLocation(start.plusHours(i)));
+		for (int i = 0; i < 60 * 60 * 24 * days; i++) {
+			SensorObservation o1 = new SensorObservationBase();
+			o1.setSensor(sensor("s1"));
+			o1.setProperty(property("p1"));
+			o1.setFeature(feature("f1"));
+			o1.setSensorOutput(sensorOutput(Integer.valueOf(i).doubleValue()));
+			o1.setTemporalLocation(temporalLocation(start.plusSeconds(i)));
+			store.consider(o1);
 
-			store.consider(o);
+			DatasetObservation o2 = new DatasetObservationBase();
+			o2.setDataset(dataset("d1"));
+			o2.addComponent(componentProperty(SDMX.Dimension.timePeriod),
+					componentPropertyValue(start.plusSeconds(i)));
+			o2.addComponent(componentProperty("cp1"), componentPropertyValue(i));
+			store.consider(o2);
 		}
+
+		long t2 = System.currentTimeMillis();
+
+		loadTimeInSeconds = (t2 - t1) / 1000;
 	}
 
 	@AfterClass
 	public static void afterClass() {
+		System.out.println("Load time: " + loadTimeInSeconds + " [s]");
+		System.out.println("Store size: " + store.size());
+
 		store.close();
 	}
 
 	@Test
-	public void test1() {
+	public void test1a() {
+		Iterator<SensorObservation> it = store
+				.getSensorObservations(
+						sensor("http://example.org#s1"),
+						null,
+						null,
+						interval(dateTime(start.plusSeconds(1)), dateTime(start
+								.plusSeconds(queryTimeIntervalInSeconds))));
+
+		List<SensorObservation> a = Iterators.asList(it);
+
+		assertEquals(queryTimeIntervalInSeconds, a.size());
+	}
+
+	@Test
+	public void test1b() {
 		Iterator<SensorObservation> it = store.getSensorObservations(
 				sensor("http://example.org#s1"),
 				null,
 				null,
-				interval(dateTime(2014, 1, 3, 0, 0, 0),
-						dateTime(2014, 1, 3, 23, 59, 59)));
+				interval(
+						dateTime(start.minusYears(1).plusSeconds(1)),
+						dateTime(start.minusYears(1).plusSeconds(
+								queryTimeIntervalInSeconds))));
 
 		List<SensorObservation> a = Iterators.asList(it);
 
-		assertEquals(24, a.size());
+		assertEquals(0, a.size());
 	}
 
-	@Ignore
 	@Test
-	public void test2() {
-		DatasetObservation o1 = new DatasetObservationBase();
-		o1.setDataset(dataset("d1"));
-		o1.addComponent(
-				componentProperty(SDMX.Dimension.timePeriod),
-				new ComponentPropertyValueTemporalLocation(
-						new TemporalLocationDateTime("tl1", dtf
-								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
-		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
-		store.consider(o1);
-
+	public void test2a() {
 		Iterator<DatasetObservation> it = store.getDatasetObservations(
 				dataset("http://example.org#d1"),
 				componentProperty(SDMX.Dimension.timePeriod),
-				componentPropertyValue(dateTime(dtf
-						.parseDateTime("2014-02-10T00:00:00.000+02:00"))),
-				componentPropertyValue(dateTime(dtf
-						.parseDateTime("2014-02-15T00:00:00.000+02:00"))));
+				componentPropertyValue(dateTime(start.plusSeconds(1))),
+				componentPropertyValue(dateTime(start
+						.plusSeconds(queryTimeIntervalInSeconds))));
 
 		List<DatasetObservation> a = Iterators.asList(it);
 
-		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+		assertEquals(queryTimeIntervalInSeconds, a.size());
+	}
 
-		DatasetObservation o2 = new DatasetObservationBase();
-		o2.setDataset(dataset("http://example.org#d1"));
-		o2.addComponent(
+	@Test
+	public void test2b() {
+		Iterator<DatasetObservation> it = store.getDatasetObservations(
+				dataset("http://example.org#d1"),
 				componentProperty(SDMX.Dimension.timePeriod),
-				new ComponentPropertyValueTemporalLocation(
-						new TemporalLocationDateTime(
-								"http://example.org#tl1",
-								dtf.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
-		o2.addComponent(componentProperty("http://example.org#cp1"),
-				componentPropertyValue(0.0));
-		e.add(o2);
+				componentPropertyValue(dateTime(start.minusYears(1)
+						.plusSeconds(1))),
+				componentPropertyValue(dateTime(start.minusYears(1)
+						.plusSeconds(queryTimeIntervalInSeconds))));
 
-		assertEquals(e, a);
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		assertEquals(0, a.size());
 	}
 
 }

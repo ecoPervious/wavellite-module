@@ -56,6 +56,8 @@ public interface ModuleStore extends Module<Entity> {
 	public String getNamespace();
 
 	public void open();
+	
+	public long size();
 
 	public void close();
 

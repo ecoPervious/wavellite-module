@@ -6,8 +6,6 @@
 package fi.uef.envi.wavellite.module.store.sesame;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.Set;
 
 import org.openrdf.model.Model;
@@ -22,10 +20,6 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.nativerdf.NativeStore;
@@ -102,14 +96,12 @@ public class ModuleStoreSail extends AbstractModuleStoreRdf {
 		for (Statement statement : statements)
 			store(statement);
 	}
-
-	public void export(File file) {
+	
+	@Override
+	public long size() {
 		try {
-			FileOutputStream out = new FileOutputStream(file);
-			RDFWriter writer = Rio.createWriter(RDFFormat.RDFXML, out);
-			conn.export(writer);
-		} catch (FileNotFoundException | RDFHandlerException
-				| RepositoryException e) {
+			return conn.size();
+		} catch (RepositoryException e) {
 			throw new RuntimeException(e);
 		}
 	}

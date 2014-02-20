@@ -36,9 +36,9 @@ import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
  * @author Markus Stocker
  */
 
-/** @deprecated use MOduleStoreSail instead */ 
 public class ModuleStoreFile extends AbstractModuleStoreRdf {
 
+	private long size = 0L;
 	private FileOutputStream outputStream;
 	private RDFWriter rdfWriter;
 
@@ -80,6 +80,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	public void store(Statement statement) {
 		try {
 			rdfWriter.handleStatement(statement);
+			size++;
 		} catch (RDFHandlerException e) {
 			throw new RuntimeException(e);
 		}
@@ -90,6 +91,11 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public long size() {
+		return size;
+	}
+	
 	@Override
 	public void close() {
 		try {

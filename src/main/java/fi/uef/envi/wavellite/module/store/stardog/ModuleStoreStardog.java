@@ -181,7 +181,7 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 	public void store(Statement statement) {
 		storeAll(Collections.singleton(statement));
 	}
-	
+
 	@Override
 	public void storeAll(Set<Statement> statements) {
 		try {
@@ -198,23 +198,32 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public Model executeSparql(String sparql) {
 		Model ret = new LinkedHashModel();
-		
+
 		try {
 			GraphQuery graphQuery = conn.graph(sparql);
 			GraphQueryResult result = graphQuery.execute();
-			
+
 			while (result.hasNext()) {
 				ret.add(result.next());
 			}
 		} catch (StardogException | QueryEvaluationException e) {
-			throw new RuntimeException(e);	
+			throw new RuntimeException(e);
 		}
-		
+
 		return ret;
+	}
+
+	@Override
+	public long size() {
+		try {
+			return conn.size();
+		} catch (StardogException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
