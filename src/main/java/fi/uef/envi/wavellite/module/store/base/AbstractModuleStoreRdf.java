@@ -441,6 +441,20 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?endId <" + RDF.TYPE.stringValue() + "> <" + WOE.TimePoint
 				+ "> .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
+		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
+				+ "> ?spatialLocationType .");
+		// If spatial location is spatial place
+		sb.append("?componentPropertyValue <" + RDFS.LABEL.stringValue()
+				+ "> ?spatialLocationLabel .");
+		sb.append("?componentPropertyValue <" + OWL.SAMEAS.stringValue()
+				+ "> ?spatialLocationSameAs .");
+		// If spatial location is spatial region
+		sb.append("?componentPropertyValue <" + GeoSPARQL.hasGeometry
+				+ "> ?geometryId .");
+		sb.append("?geometryId <" + RDF.TYPE.stringValue()
+				+ "> ?geometryType .");
+		sb.append("?geometryId <" + GeoSPARQL.asWKT + "> ?wktLiteral .");
+		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
 		sb.append("} where {");
 		sb.append("?observationId <" + QB.dataSet + "> <" + datasetId + "> .");
 		sb.append("?observationId ?componentProperty ?componentPropertyValue .");
@@ -462,6 +476,29 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?beginningId <" + Time.inXSDDateTime
 				+ "> ?beginningDateTime .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
+		sb.append("}");
+		sb.append(" optional {");
+		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
+				+ "> ?spatialLocationType .");
+		sb.append("?componentPropertyValue <" + RDFS.LABEL.stringValue()
+				+ "> ?spatialLocationLabel .");
+		sb.append("?componentPropertyValue <" + OWL.SAMEAS.stringValue()
+				+ "> ?spatialLocationSameAs .");
+		sb.append("}");
+		sb.append(" optional {");
+		sb.append("?componentPropertyValue <" + RDF.TYPE.stringValue()
+				+ "> ?spatialLocationType .");
+		sb.append("?componentPropertyValue <" + GeoSPARQL.hasGeometry
+				+ "> ?geometryId .");
+		sb.append("?geometryId <" + RDF.TYPE.stringValue()
+				+ "> ?geometryType .");
+		sb.append("{");
+		sb.append("?geometryId <" + GeoSPARQL.asWKT + "> ?wktLiteral .");
+		sb.append("}");
+		sb.append(" UNION ");
+		sb.append("{");
+		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
+		sb.append("}");
 		sb.append("}");
 		// The case in which the filtered property is for a time point
 		sb.append("{");
@@ -609,6 +646,10 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			if (p.equals(GeoSPARQL.asURI.asWKT))
 				continue;
 			if (p.equals(GeoSPARQL.asURI.asGML))
+				continue;
+			if (p.equals(RDFS.LABEL))
+				continue;
+			if (p.equals(OWL.SAMEAS))
 				continue;
 
 			statements.add(vf.createStatement(p, RDF.TYPE,
