@@ -9,6 +9,7 @@ e.g. Sensor, Property, Feature, ...
 * ADDED: ModuleStoreSail, mostly used for testing but could be interesting also
 for persistent storage (as a potential alternative to Stardog)
 + ADDED: Implementation to query for sensor observations
++ ADDED: Implementation to query for dataset observations
 
 0.1.0 Changes (2014-01-28)
 --------------------------
