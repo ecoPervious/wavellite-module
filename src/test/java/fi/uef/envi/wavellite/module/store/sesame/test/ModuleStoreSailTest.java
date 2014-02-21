@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.format.ISOPeriodFormat;
+import org.joda.time.format.PeriodFormatter;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,11 +37,24 @@ import fi.uef.envi.wavellite.entity.observation.SensorObservation;
 import fi.uef.envi.wavellite.entity.observation.base.ObservationValueDouble;
 import fi.uef.envi.wavellite.entity.observation.base.SensorObservationBase;
 import fi.uef.envi.wavellite.entity.observation.base.SensorOutputBase;
+import fi.uef.envi.wavellite.entity.situation.Attribute;
 import fi.uef.envi.wavellite.entity.situation.ElementaryInfon;
+import fi.uef.envi.wavellite.entity.situation.Polarity;
+import fi.uef.envi.wavellite.entity.situation.RelevantIndividual;
 import fi.uef.envi.wavellite.entity.situation.Situation;
+import fi.uef.envi.wavellite.entity.situation.Value;
+import fi.uef.envi.wavellite.entity.situation.base.AttributeSpatialLocation;
+import fi.uef.envi.wavellite.entity.situation.base.AttributeTemporalLocation;
+import fi.uef.envi.wavellite.entity.situation.base.AttributeUri;
+import fi.uef.envi.wavellite.entity.situation.base.AttributeValue;
 import fi.uef.envi.wavellite.entity.situation.base.ElementaryInfonBase;
 import fi.uef.envi.wavellite.entity.situation.base.RelationBase;
+import fi.uef.envi.wavellite.entity.situation.base.RelevantIndividualBase;
 import fi.uef.envi.wavellite.entity.situation.base.SituationBase;
+import fi.uef.envi.wavellite.entity.situation.base.ValueDouble;
+import fi.uef.envi.wavellite.entity.situation.base.ValueInteger;
+import fi.uef.envi.wavellite.entity.situation.base.ValuePeriod;
+import fi.uef.envi.wavellite.entity.situation.base.ValueString;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.module.store.sesame.ModuleStoreSail;
 import fi.uef.envi.wavellite.vocabulary.SDMX;
@@ -71,6 +86,7 @@ import static fi.uef.envi.wavellite.entity.core.EntityFactory.componentProperty;
 
 public class ModuleStoreSailTest {
 
+	private final static PeriodFormatter pf = ISOPeriodFormat.standard();
 	private static final ValueFactory vf = ValueFactoryImpl.getInstance();
 	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
 			.withOffsetParsed();
@@ -1008,30 +1024,382 @@ public class ModuleStoreSailTest {
 
 		store.close();
 	}
-	
+
 	@Test
 	public void test14a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
-		
+
 		Situation s1 = new SituationBase("s1");
 		ElementaryInfon i1 = new ElementaryInfonBase("i1");
 		s1.addSupportedInfon(i1);
 		i1.setRelation(new RelationBase("r1"));
+		RelevantIndividual o1 = new RelevantIndividualBase("o1");
+		Attribute a1 = new AttributeValue("a1");
+		Value v1 = new ValueDouble("v1", 0.0);
+		a1.setValue(v1);
+		o1.addAttribute(a1);
+		i1.addRelevantObject(o1);
+		i1.setPolarity(Polarity.True);
 		store.consider(s1);
-		
-		Iterator<Situation> it = store.getSituations(new RelationBase("http://example.org#r1"));
-		
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
 		List<Situation> a = Iterators.asList(it);
-		
+
 		List<Situation> e = new ArrayList<Situation>();
 		Situation s2 = new SituationBase("http://example.org#s1");
 		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
 		s2.addSupportedInfon(i2);
 		i2.setRelation(new RelationBase("http://example.org#r1"));
+		RelevantIndividual o2 = new RelevantIndividualBase(
+				"http://example.org#o1");
+		Attribute a2 = new AttributeValue("http://example.org#a1");
+		Value v2 = new ValueDouble("http://example.org#v1", 0.0);
+		a2.setValue(v2);
+		o2.addAttribute(a2);
+		i2.addRelevantObject(o2);
+		i2.setPolarity(Polarity.True);
 		e.add(s2);
-		
+
 		assertEquals(e, a);
-		
+
+		store.close();
+	}
+
+	@Test
+	public void test14b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		RelevantIndividual o1 = new RelevantIndividualBase("o1");
+		Attribute a1 = new AttributeValue("a1");
+		Value v1 = new ValueDouble("v1", 0.0);
+		a1.setValue(v1);
+		o1.addAttribute(a1);
+		i1.addRelevantObject(o1);
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r2"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		assertTrue(a.isEmpty());
+
+		store.close();
+	}
+
+	@Test
+	public void test15a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		RelevantIndividual o1 = new RelevantIndividualBase("o1");
+		Attribute a1 = new AttributeValue("a1");
+		Value v1 = new ValueString("v1", "v1");
+		a1.setValue(v1);
+		o1.addAttribute(a1);
+		i1.addRelevantObject(o1);
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		RelevantIndividual o2 = new RelevantIndividualBase(
+				"http://example.org#o1");
+		Attribute a2 = new AttributeValue("http://example.org#a1");
+		Value v2 = new ValueString("http://example.org#v1", "v1");
+		a2.setValue(v2);
+		o2.addAttribute(a2);
+		i2.addRelevantObject(o2);
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test16a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		RelevantIndividual o1 = new RelevantIndividualBase("o1");
+		Attribute a1 = new AttributeValue("a1");
+		Value v1 = new ValueInteger("v1", 1);
+		a1.setValue(v1);
+		o1.addAttribute(a1);
+		i1.addRelevantObject(o1);
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		RelevantIndividual o2 = new RelevantIndividualBase(
+				"http://example.org#o1");
+		Attribute a2 = new AttributeValue("http://example.org#a1");
+		Value v2 = new ValueInteger("http://example.org#v1", 1);
+		a2.setValue(v2);
+		o2.addAttribute(a2);
+		i2.addRelevantObject(o2);
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test17a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		RelevantIndividual o1 = new RelevantIndividualBase("o1");
+		Attribute a1 = new AttributeValue("a1");
+		Value v1 = new ValuePeriod("v1", pf.parsePeriod("P1D"));
+		a1.setValue(v1);
+		o1.addAttribute(a1);
+		i1.addRelevantObject(o1);
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		RelevantIndividual o2 = new RelevantIndividualBase(
+				"http://example.org#o1");
+		Attribute a2 = new AttributeValue("http://example.org#a1");
+		Value v2 = new ValuePeriod("http://example.org#v1",
+				pf.parsePeriod("P1D"));
+		a2.setValue(v2);
+		o2.addAttribute(a2);
+		i2.addRelevantObject(o2);
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test18a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		RelevantIndividual o1 = new RelevantIndividualBase("o1");
+		Attribute a1 = new AttributeUri("a1");
+		a1.setValue(vf.createURI("http://test.org#u1"));
+		o1.addAttribute(a1);
+		i1.addRelevantObject(o1);
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		RelevantIndividual o2 = new RelevantIndividualBase(
+				"http://example.org#o1");
+		Attribute a2 = new AttributeUri("http://example.org#a1");
+		a2.setValue(vf.createURI("http://test.org#u1"));
+		o2.addAttribute(a2);
+		i2.addRelevantObject(o2);
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test19a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		i1.addRelevantObject(new AttributeUri(vf
+				.createURI("http://test.org#u1")));
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		i2.addRelevantObject(new AttributeUri(vf
+				.createURI("http://test.org#u1")));
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test20a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		i1.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationDateTime(dtf
+						.parseDateTime("2001-01-01T00:00:00.000+02:00"))));
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		i2.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationDateTime(dtf
+						.parseDateTime("2001-01-01T00:00:00.000+02:00"))));
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test21a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		i1.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationInterval(
+						new TemporalLocationDateTime(dtf
+								.parseDateTime("2001-01-01T00:00:00.000+02:00")),
+						new TemporalLocationDateTime(dtf
+								.parseDateTime("2001-01-01T01:00:00.000+02:00")))));
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		i2.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationInterval(
+						new TemporalLocationDateTime(dtf
+								.parseDateTime("2001-01-01T00:00:00.000+02:00")),
+						new TemporalLocationDateTime(dtf
+								.parseDateTime("2001-01-01T01:00:00.000+02:00")))));
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+	
+	@Test
+	public void test22a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("r1"));
+		i1.addRelevantObject(new AttributeSpatialLocation(
+				new SpatialLocationPlace("p1")));
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		List<Situation> a = Iterators.asList(it);
+
+		List<Situation> e = new ArrayList<Situation>();
+		Situation s2 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i1");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		i2.addRelevantObject(new AttributeSpatialLocation(
+				new SpatialLocationPlace("http://example.org#p1")));
+		i2.setPolarity(Polarity.True);
+		e.add(s2);
+
+		assertEquals(e, a);
+
 		store.close();
 	}
 
