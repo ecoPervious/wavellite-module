@@ -600,8 +600,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ STO.RelevantIndividual + "> .");
 		sb.append("?relevantIndividualId <" + STO.hasAttribute
 				+ "> ?attributeId .");
-		sb.append("?attributeId <" + RDF.TYPE.stringValue() + "> <"
-				+ STO.Attribute + "> .");
+		sb.append("?attributeId <" + RDF.TYPE.stringValue()
+				+ "> <" + STO.Attribute + "> .");
 		sb.append("?attributeId <" + STO.hasAttributeValue
 				+ "> ?attributeValueId .");
 		sb.append("?attributeValueId <" + RDF.TYPE.stringValue() + "> <"
@@ -610,21 +610,20 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ "> ?attributeValue .");
 		// If anchorN relates to an attribute uri
 		sb.append("?elementaryInfonId ?anchorN ?attributeUri .");
-//		sb.append("?attributeUri <" + RDF.TYPE.stringValue() + "> <"
-//				+ STO.Attribute + "> .");
 		// If anchorN relates to an attribute temporal location
-		sb.append("?elementaryInfonId ?anchorN ?attributeTemporalLocation .");
-		sb.append("?attributeTemporalLocation <" + RDF.TYPE.stringValue()
-				+ "> <" + STO.Attribute + "> .");
-		sb.append("?attributeTemporalLocation <" + RDF.TYPE.stringValue()
-				+ "> ?temporalLocationType .");
 		// TimePoint
-		sb.append("?attributeTemporalLocation <" + Time.inXSDDateTime
+		sb.append("?elementaryInfonId ?anchorN ?attributeTimePointId .");
+		sb.append("?attributeTimePointId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimePoint + "> .");
+		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
 				+ "> ?dateTime .");
 		// TimeInterval
-		sb.append("?attributeTemporalLocation <" + Time.hasBeginning
+		sb.append("?elementaryInfonId ?anchorN ?attributeTimeIntervalId .");
+		sb.append("?attributeTimeIntervalId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimeInterval + "> .");
+		sb.append("?attributeTimeIntervalId <" + Time.hasBeginning
 				+ "> ?beginningId .");
-		sb.append("?attributeTemporalLocation <" + Time.hasEnd + "> ?endId .");
+		sb.append("?attributeTimeIntervalId <" + Time.hasEnd + "> ?endId .");
 		sb.append("?beginningId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimePoint + "> .");
 		sb.append("?beginningId <" + Time.inXSDDateTime
@@ -632,24 +631,30 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?endId <" + RDF.TYPE.stringValue() + "> <" + WOE.TimePoint
 				+ "> .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
-		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialLocation .");
 		// If anchorN relates to an attribute spatial location
-		sb.append("?attributeSpatialLocation <" + RDF.TYPE.stringValue()
-				+ "> ?spatialLocationType .");
-		sb.append("?attributeSpatialLocation <" + RDF.TYPE.stringValue()
-				+ "> <" + STO.Attribute + "> .");
+		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialPlaceId .");
 		// If spatial location is spatial place
-		sb.append("?attributeSpatialLocation <" + RDFS.LABEL.stringValue()
+		sb.append("?attributeSpatialPlaceId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.SpatialPlace + "> .");
+		sb.append("?attributeSpatialPlaceId <" + RDFS.LABEL.stringValue()
 				+ "> ?spatialLocationLabel .");
-		sb.append("?attributeSpatialLocation <" + OWL.SAMEAS.stringValue()
+		sb.append("?attributeSpatialPlaceId <" + OWL.SAMEAS.stringValue()
 				+ "> ?spatialLocationSameAs .");
 		// If spatial location is spatial region
-		sb.append("?attributeSpatialLocation <" + GeoSPARQL.hasGeometry
+		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialRegionId .");
+		sb.append("?attributeSpatialRegionId <" + RDF.TYPE.stringValue()
+				+ "> <" + WOE.SpatialRegion + "> .");
+		sb.append("?attributeSpatialRegionId <" + GeoSPARQL.hasGeometry
 				+ "> ?geometryId .");
 		sb.append("?geometryId <" + RDF.TYPE.stringValue()
 				+ "> ?geometryType .");
 		sb.append("?geometryId <" + GeoSPARQL.asWKT + "> ?wktLiteral .");
 		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
+		// Value
+		sb.append("?elementaryInfonId ?anchorN ?valueId .");
+		sb.append("?valueId <" + RDF.TYPE.stringValue() + "> <" + STO.Value
+				+ "> .");
+		sb.append("?valueId <" + STO.asURI.attributeValue + "> ?value .");
 		// WHERE
 		sb.append("} where {");
 		sb.append("?situationId <" + RDF.TYPE.stringValue() + "> <"
@@ -665,6 +670,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?relevantIndividualId <" + RDF.TYPE.stringValue() + "> <"
 				+ STO.RelevantIndividual + "> .");
 		sb.append(" optional {");
+		sb.append("?elementaryInfonId ?anchorN ?relevantIndividualId .");
 		sb.append("?relevantIndividualId <" + STO.hasAttribute
 				+ "> ?attributeId .");
 		// This may be optional in case attribute is a URI, temporal or spatial
@@ -677,46 +683,52 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		sb.append("}");
 		sb.append("}");
-		// Match relevant object that are attribute uri
+		// // Match relevant object that are attribute uri
 		sb.append(" optional {");
 		sb.append("?elementaryInfonId ?anchorN ?attributeUri .");
 		sb.append("}");
 		// Match relevant object that are attribute temporal location
-		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?attributeTemporalLocation .");
 		// TimePoint
 		sb.append(" optional {");
-		sb.append("?attributeTemporalLocation <" + RDF.TYPE.stringValue()
-				+ "> ?temporalLocationType .");
-		sb.append("?attributeTemporalLocation <" + Time.inXSDDateTime
+		sb.append("?elementaryInfonId ?anchorN ?attributeTimePointId .");
+		sb.append("?attributeTimePointId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimePoint + "> .");
+		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
 				+ "> ?dateTime .");
 		sb.append("}");
 		// TimeInterval
 		sb.append(" optional {");
-		sb.append("?attributeTemporalLocation <" + RDF.TYPE.stringValue()
-				+ "> ?temporalLocationType .");
-		sb.append("?attributeTemporalLocation <" + Time.hasBeginning
+		sb.append("?elementaryInfonId ?anchorN ?attributeTimeIntervalId .");
+		sb.append("?attributeTimeIntervalId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimeInterval + "> .");
+		sb.append("?attributeTimeIntervalId <" + Time.hasBeginning
 				+ "> ?beginningId .");
-		sb.append("?attributeTemporalLocation <" + Time.hasEnd + "> ?endId .");
+		sb.append("?attributeTimeIntervalId <" + Time.hasEnd + "> ?endId .");
 		sb.append("?beginningId <" + Time.inXSDDateTime
 				+ "> ?beginningDateTime .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
 		sb.append("}");
-		sb.append("}");
 		// Match relevant object that are attribute spatial location
 		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialLocation .");
-		sb.append("?attributeSpatialLocation <" + RDF.TYPE.stringValue()
-				+ "> ?spatialLocationType .");
-		// SpatialLocationPlace
-		sb.append("{");
-		sb.append("?attributeSpatialLocation <" + RDFS.LABEL.stringValue()
+		// SpatialPlace
+		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialPlaceId .");
+		sb.append("?attributeSpatialPlaceId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.SpatialPlace + "> .");
+		sb.append(" optional {");
+		sb.append("?attributeSpatialPlaceId <" + RDFS.LABEL.stringValue()
 				+ "> ?spatialLocationLabel .");
-		sb.append("?attributeSpatialLocation <" + OWL.SAMEAS.stringValue()
+		sb.append("}");
+		sb.append(" optional {");
+		sb.append("?attributeSpatialPlaceId <" + OWL.SAMEAS.stringValue()
 				+ "> ?spatialLocationSameAs .");
-		sb.append("} union {");
-		// SpatialLocationRegion
-		sb.append("?attributeSpatialLocation <" + GeoSPARQL.hasGeometry
+		sb.append("}");
+		sb.append("}");
+		sb.append(" optional {");
+		// SpatialRegion
+		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialRegionId .");
+		sb.append("?attributeSpatialRegionId <" + RDF.TYPE.stringValue()
+				+ "> <" + WOE.SpatialRegion + "> .");
+		sb.append("?attributeSpatialRegionId <" + GeoSPARQL.hasGeometry
 				+ "> ?geometryId .");
 		sb.append("?geometryId <" + RDF.TYPE.stringValue()
 				+ "> ?geometryType .");
@@ -728,6 +740,12 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
 		sb.append("}");
 		sb.append("}");
+		sb.append(" optional {");
+		// Value
+		sb.append("?elementaryInfonId ?anchorN ?valueId .");
+		sb.append("?valueId <" + RDF.TYPE.stringValue() + "> <" + STO.Value
+				+ "> .");
+		sb.append("?valueId <" + STO.asURI.attributeValue + "> ?value .");
 		sb.append("}");
 		sb.append("}");
 
