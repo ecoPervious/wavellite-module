@@ -129,7 +129,7 @@ public class ModuleLearningWekaTest {
 
 		@Override
 		public void considerAll(Collection<DatasetObservation> observations) {
-			queue.addAll(o.acquire(observations));
+			queue.addAll(o.extract(observations));
 		}
 
 		private class TestKnowledgeAcquirerListener implements
