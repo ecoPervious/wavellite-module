@@ -85,12 +85,12 @@ import fi.uef.envi.wavellite.vocabulary.WOE;
 public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 	protected String defaultNamespace;
-	protected EntityRepresentationRdfGeo entityRepresentationGeo = new EntityRepresentationRdfGeo();
-	protected EntityRepresentationRdfTime entityRepresentationTime = new EntityRepresentationRdfTime();
-	protected EntityRepresentationRdfSsn entityRepresentationSsn = new EntityRepresentationRdfSsn();
-	protected EntityRepresentationRdfQb entityRepresentationQb = new EntityRepresentationRdfQb();
-	protected EntityRepresentationRdfSto entityRepresentationSto = new EntityRepresentationRdfSto();
-	protected MeasurementResultTranslatorBase measurementResultConversion = new MeasurementResultTranslatorBase();
+	protected EntityRepresentationRdfGeo entityRepresentationGeo;
+	protected EntityRepresentationRdfTime entityRepresentationTime;
+	protected EntityRepresentationRdfSsn entityRepresentationSsn;
+	protected EntityRepresentationRdfQb entityRepresentationQb;
+	protected EntityRepresentationRdfSto entityRepresentationSto;
+	protected MeasurementResultTranslatorBase measurementResultConversion;
 
 	private boolean isOpen = false;
 	private EntityVisitor entityVisitor = new ThisEntityVisitor();
@@ -114,11 +114,26 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 	@Override
 	public void open() {
-		entityRepresentationGeo.setNamespace(defaultNamespace);
-		entityRepresentationTime.setNamespace(defaultNamespace);
-		entityRepresentationSsn.setNamespace(defaultNamespace);
-		entityRepresentationQb.setNamespace(defaultNamespace);
-		entityRepresentationSto.setNamespace(defaultNamespace);
+		if (entityRepresentationGeo == null)
+			entityRepresentationGeo = new EntityRepresentationRdfGeo(
+					defaultNamespace);
+		if (entityRepresentationTime == null)
+			entityRepresentationTime = new EntityRepresentationRdfTime(
+					defaultNamespace);
+		if (entityRepresentationSsn == null)
+			entityRepresentationSsn = new EntityRepresentationRdfSsn(
+					defaultNamespace, entityRepresentationGeo,
+					entityRepresentationTime);
+		if (entityRepresentationQb == null)
+			entityRepresentationQb = new EntityRepresentationRdfQb(
+					defaultNamespace, entityRepresentationGeo,
+					entityRepresentationTime);
+		if (entityRepresentationSto == null)
+			entityRepresentationSto = new EntityRepresentationRdfSto(
+					defaultNamespace, entityRepresentationGeo,
+					entityRepresentationTime);
+		if (measurementResultConversion == null)
+			measurementResultConversion = new MeasurementResultTranslatorBase();
 
 		isOpen = true;
 	}
@@ -600,8 +615,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ STO.RelevantIndividual + "> .");
 		sb.append("?relevantIndividualId <" + STO.hasAttribute
 				+ "> ?attributeId .");
-		sb.append("?attributeId <" + RDF.TYPE.stringValue()
-				+ "> <" + STO.Attribute + "> .");
+		sb.append("?attributeId <" + RDF.TYPE.stringValue() + "> <"
+				+ STO.Attribute + "> .");
 		sb.append("?attributeId <" + STO.hasAttributeValue
 				+ "> ?attributeValueId .");
 		sb.append("?attributeValueId <" + RDF.TYPE.stringValue() + "> <"
