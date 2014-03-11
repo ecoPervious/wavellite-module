@@ -88,7 +88,7 @@ public class ModuleStoreSailTest {
 
 	private final static PeriodFormatter pf = ISOPeriodFormat.standard();
 	private static final ValueFactory vf = ValueFactoryImpl.getInstance();
-	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
+	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser()
 			.withOffsetParsed();
 
 	@Test

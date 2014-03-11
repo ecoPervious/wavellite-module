@@ -772,7 +772,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected Iterator<SensorObservation> createSensorObservations(Model model) {
 		if (!isOpen)
 			open();
-		
+
 		List<SensorObservation> ret = new ArrayList<SensorObservation>();
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
@@ -792,7 +792,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected Iterator<DatasetObservation> createDatasetObservations(Model model) {
 		if (!isOpen)
 			open();
-		
+
 		List<DatasetObservation> ret = new ArrayList<DatasetObservation>();
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
@@ -816,7 +816,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected Iterator<Situation> createSituations(Model model) {
 		if (!isOpen)
 			open();
-		
+
 		List<Situation> ret = new ArrayList<Situation>();
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,

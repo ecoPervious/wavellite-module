@@ -57,7 +57,7 @@ import fi.uef.envi.wavellite.vocabulary.SDMX;
 public class ModuleStoreTest {
 
 	private static ModuleStore store;
-	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
+	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser()
 			.withOffsetParsed();
 
 	private static double days = 0.01;
