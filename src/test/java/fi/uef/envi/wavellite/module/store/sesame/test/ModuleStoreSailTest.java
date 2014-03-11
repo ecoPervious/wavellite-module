@@ -6,8 +6,10 @@
 package fi.uef.envi.wavellite.module.store.sesame.test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -23,9 +25,13 @@ import org.openrdf.util.iterators.Iterators;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
+import fi.uef.envi.wavellite.entity.core.base.SpatialGeometryLineString;
 import fi.uef.envi.wavellite.entity.core.base.SpatialGeometryPoint;
+import fi.uef.envi.wavellite.entity.core.base.SpatialGeometryPolygon;
 import fi.uef.envi.wavellite.entity.core.base.SpatialLocationPlace;
 import fi.uef.envi.wavellite.entity.core.base.SpatialLocationRegion;
 import fi.uef.envi.wavellite.entity.core.base.TemporalLocationDateTime;
@@ -88,8 +94,8 @@ public class ModuleStoreSailTest {
 
 	private final static PeriodFormatter pf = ISOPeriodFormat.standard();
 	private static final ValueFactory vf = ValueFactoryImpl.getInstance();
-	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser()
-			.withOffsetParsed();
+	private static final DateTimeFormatter dtf = ISODateTimeFormat
+			.dateTimeParser().withOffsetParsed();
 
 	@Test
 	public void test1a() {
@@ -1455,7 +1461,7 @@ public class ModuleStoreSailTest {
 
 		Iterator<Situation> it = store.getSituations(new RelationBase(
 				"http://example.org#r1"));
-		
+
 		List<Situation> a = Iterators.asList(it);
 
 		List<Situation> e = new ArrayList<Situation>();
@@ -1471,7 +1477,7 @@ public class ModuleStoreSailTest {
 
 		store.close();
 	}
-	
+
 	@Test
 	public void test25a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
@@ -1486,7 +1492,7 @@ public class ModuleStoreSailTest {
 
 		Iterator<Situation> it = store.getSituations(new RelationBase(
 				"http://example.org#r1"));
-		
+
 		List<Situation> a = Iterators.asList(it);
 
 		List<Situation> e = new ArrayList<Situation>();
@@ -1503,4 +1509,169 @@ public class ModuleStoreSailTest {
 		store.close();
 	}
 
+	@Test
+	public void test25b() {
+		ModuleStore store = new ModuleStoreSail();
+
+		Situation s1 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("http://example.org#i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("http://example.org#r1"));
+		i1.addRelevantObject(new ValueInteger("http://example.org#v1", 0));
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Situation s2 = new SituationBase("http://example.org#s2");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i2");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		i2.addRelevantObject(new ValueInteger("http://example.org#v2", 1));
+		i2.setPolarity(Polarity.True);
+		store.consider(s2);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		Set<Situation> a = new HashSet<Situation>(Iterators.asList(it));
+
+		Set<Situation> e = new HashSet<Situation>();
+
+		e.add(s1);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test25c() {
+		ModuleStore store = new ModuleStoreSail();
+
+		Situation s1 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("http://example.org#i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("http://example.org#r1"));
+		i1.addRelevantObject(new ValueInteger("http://example.org#v1", 0));
+		i1.addRelevantObject(new ValueInteger("http://example.org#v2", 1));
+		i1.setPolarity(Polarity.True);
+		store.consider(s1);
+
+		Situation s2 = new SituationBase("http://example.org#s2");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i2");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#r1"));
+		i2.addRelevantObject(new ValueInteger("http://example.org#v3", 1));
+		i2.addRelevantObject(new ValueInteger("http://example.org#v4", 2));
+		i2.setPolarity(Polarity.True);
+		store.consider(s2);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#r1"));
+
+		Set<Situation> a = new HashSet<Situation>(Iterators.asList(it));
+
+		Set<Situation> e = new HashSet<Situation>();
+
+		e.add(s1);
+		e.add(s2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
+	public void test26a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		GeometryFactory gf = new GeometryFactory();
+		DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser()
+				.withOffsetParsed();
+
+		Polygon p1 = gf.createPolygon(new Coordinate[] {
+				new Coordinate(0.0, 0.0), new Coordinate(0.0, 1.0),
+				new Coordinate(1.0, 1.0), new Coordinate(1.0, 0.0),
+				new Coordinate(0.0, 0.0) });
+		Polygon p2 = gf.createPolygon(new Coordinate[] {
+				new Coordinate(3.0, 3.0), new Coordinate(3.0, 4.0),
+				new Coordinate(4.0, 4.0), new Coordinate(4.0, 3.0),
+				new Coordinate(3.0, 3.0) });
+		LineString ls = gf.createLineString(new Coordinate[] {
+				new Coordinate(0.0, 0.0), new Coordinate(2.0, 2.0) });
+
+		Situation s1 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("http://exmaple.org#i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("http://example.org#storm"));
+		i1.setPolarity(Polarity.True);
+		i1.addRelevantObject(new RelevantIndividualBase(
+				"http://example.org#storm-1"));
+		i1.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationInterval(
+						"http://example.org#tl11",
+						new TemporalLocationDateTime(
+								"http://example.org#dt11",
+								dtf.parseDateTime("2014-03-03T16:00:00.000+02:00")),
+						new TemporalLocationDateTime(
+								"http://example.org#dt12",
+								dtf.parseDateTime("2014-03-03T17:00:00.000+02:00")))));
+		i1.addRelevantObject(new AttributeSpatialLocation(
+				new SpatialLocationRegion("http://example.org#sl1",
+						new SpatialGeometryPolygon(p1))));
+
+		Situation s2 = new SituationBase("http://example.org#s2");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://exmaple.org#i2");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#storm"));
+		i2.setPolarity(Polarity.True);
+		i2.addRelevantObject(new RelevantIndividualBase(
+				"http://example.org#storm-2"));
+		i2.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationInterval(
+						"http://example.org#tl21",
+						new TemporalLocationDateTime(
+								"http://example.org#dt21",
+								dtf.parseDateTime("2014-03-03T16:00:00.000+02:00")),
+						new TemporalLocationDateTime(
+								"http://example.org#dt22",
+								dtf.parseDateTime("2014-03-03T17:00:00.000+02:00")))));
+		i2.addRelevantObject(new AttributeSpatialLocation(
+				new SpatialLocationRegion("http://example.org#sl2",
+						new SpatialGeometryPolygon(p2))));
+
+		Situation s3 = new SituationBase("http://example.org#s3");
+		ElementaryInfon i3 = new ElementaryInfonBase("http://exmaple.org#i3");
+		s3.addSupportedInfon(i3);
+		i3.setRelation(new RelationBase("http://example.org#driver"));
+		i3.setPolarity(Polarity.True);
+		i3.addRelevantObject(new RelevantIndividualBase(
+				"http://example.org#driver-1"));
+		i3.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationInterval(
+						"http://example.org#tl31",
+						new TemporalLocationDateTime(
+								"http://example.org#dt31",
+								dtf.parseDateTime("2014-03-03T15:00:00.000+02:00")),
+						new TemporalLocationDateTime(
+								"http://example.org#dt32",
+								dtf.parseDateTime("2014-03-03T18:00:00.000+02:00")))));
+		i3.addRelevantObject(new AttributeSpatialLocation(
+				new SpatialLocationRegion("http://example.org#sl3",
+						new SpatialGeometryLineString(ls))));
+
+		store.consider(s1);
+		store.consider(s2);
+		store.consider(s3);
+
+		Iterator<Situation> it = store.getSituations(new RelationBase(
+				"http://example.org#driver"));
+
+		Set<Situation> a = new HashSet<Situation>(Iterators.asList(it));
+
+		Set<Situation> e = new HashSet<Situation>();
+		e.add(s3);
+
+		assertEquals(e, a);
+	}
 }

@@ -610,7 +610,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ STO.Relation + "> .");
 		sb.append("?elementaryInfonId <" + STO.polarity + "> ?polarityId .");
 		// If anchorN relates to a relevant individual
-		sb.append("?elementaryInfonId ?anchorN ?relevantIndividualId .");
+		sb.append("?elementaryInfonId ?anchorA ?relevantIndividualId .");
 		sb.append("?relevantIndividualId <" + RDF.TYPE.stringValue() + "> <"
 				+ STO.RelevantIndividual + "> .");
 		sb.append("?relevantIndividualId <" + STO.hasAttribute
@@ -624,16 +624,16 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?attributeValueId <" + STO.attributeValue
 				+ "> ?attributeValue .");
 		// If anchorN relates to an attribute uri
-		sb.append("?elementaryInfonId ?anchorN ?attributeUri .");
+		sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
 		// If anchorN relates to an attribute temporal location
 		// TimePoint
-		sb.append("?elementaryInfonId ?anchorN ?attributeTimePointId .");
+		sb.append("?elementaryInfonId ?anchorC ?attributeTimePointId .");
 		sb.append("?attributeTimePointId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimePoint + "> .");
 		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
 				+ "> ?dateTime .");
 		// TimeInterval
-		sb.append("?elementaryInfonId ?anchorN ?attributeTimeIntervalId .");
+		sb.append("?elementaryInfonId ?anchorD ?attributeTimeIntervalId .");
 		sb.append("?attributeTimeIntervalId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimeInterval + "> .");
 		sb.append("?attributeTimeIntervalId <" + Time.hasBeginning
@@ -647,7 +647,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ "> .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
 		// If anchorN relates to an attribute spatial location
-		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialPlaceId .");
+		sb.append("?elementaryInfonId ?anchorE ?attributeSpatialPlaceId .");
 		// If spatial location is spatial place
 		sb.append("?attributeSpatialPlaceId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.SpatialPlace + "> .");
@@ -656,7 +656,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?attributeSpatialPlaceId <" + OWL.SAMEAS.stringValue()
 				+ "> ?spatialLocationSameAs .");
 		// If spatial location is spatial region
-		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialRegionId .");
+		sb.append("?elementaryInfonId ?anchorF ?attributeSpatialRegionId .");
 		sb.append("?attributeSpatialRegionId <" + RDF.TYPE.stringValue()
 				+ "> <" + WOE.SpatialRegion + "> .");
 		sb.append("?attributeSpatialRegionId <" + GeoSPARQL.hasGeometry
@@ -666,7 +666,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?geometryId <" + GeoSPARQL.asWKT + "> ?wktLiteral .");
 		sb.append("?geometryId <" + GeoSPARQL.asGML + "> ?gmlLiteral .");
 		// Value
-		sb.append("?elementaryInfonId ?anchorN ?valueId .");
+		sb.append("?elementaryInfonId ?anchorG ?valueId .");
 		sb.append("?valueId <" + RDF.TYPE.stringValue() + "> <" + STO.Value
 				+ "> .");
 		sb.append("?valueId <" + STO.asURI.attributeValue + "> ?value .");
@@ -681,11 +681,10 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?elementaryInfonId <" + STO.polarity + "> ?polarityId .");
 		// Match relevant objects that are relevant individuals
 		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?relevantIndividualId .");
+		sb.append("?elementaryInfonId ?anchorA ?relevantIndividualId .");
 		sb.append("?relevantIndividualId <" + RDF.TYPE.stringValue() + "> <"
 				+ STO.RelevantIndividual + "> .");
 		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?relevantIndividualId .");
 		sb.append("?relevantIndividualId <" + STO.hasAttribute
 				+ "> ?attributeId .");
 		// This may be optional in case attribute is a URI, temporal or spatial
@@ -700,12 +699,12 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		// // Match relevant object that are attribute uri
 		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?attributeUri .");
+		sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
 		sb.append("}");
 		// Match relevant object that are attribute temporal location
 		// TimePoint
 		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?attributeTimePointId .");
+		sb.append("?elementaryInfonId ?anchorC ?attributeTimePointId .");
 		sb.append("?attributeTimePointId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimePoint + "> .");
 		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
@@ -713,7 +712,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		// TimeInterval
 		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorN ?attributeTimeIntervalId .");
+		sb.append("?elementaryInfonId ?anchorD ?attributeTimeIntervalId .");
 		sb.append("?attributeTimeIntervalId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimeInterval + "> .");
 		sb.append("?attributeTimeIntervalId <" + Time.hasBeginning
@@ -726,7 +725,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		// Match relevant object that are attribute spatial location
 		sb.append(" optional {");
 		// SpatialPlace
-		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialPlaceId .");
+		sb.append("?elementaryInfonId ?anchorE ?attributeSpatialPlaceId .");
 		sb.append("?attributeSpatialPlaceId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.SpatialPlace + "> .");
 		sb.append(" optional {");
@@ -740,7 +739,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		sb.append(" optional {");
 		// SpatialRegion
-		sb.append("?elementaryInfonId ?anchorN ?attributeSpatialRegionId .");
+		sb.append("?elementaryInfonId ?anchorF ?attributeSpatialRegionId .");
 		sb.append("?attributeSpatialRegionId <" + RDF.TYPE.stringValue()
 				+ "> <" + WOE.SpatialRegion + "> .");
 		sb.append("?attributeSpatialRegionId <" + GeoSPARQL.hasGeometry
@@ -757,7 +756,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		sb.append(" optional {");
 		// Value
-		sb.append("?elementaryInfonId ?anchorN ?valueId .");
+		sb.append("?elementaryInfonId ?anchorG ?valueId .");
 		sb.append("?valueId <" + RDF.TYPE.stringValue() + "> <" + STO.Value
 				+ "> .");
 		sb.append("?valueId <" + STO.asURI.attributeValue + "> ?value .");
@@ -816,7 +815,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected Iterator<Situation> createSituations(Model model) {
 		if (!isOpen)
 			open();
-
+		
 		List<Situation> ret = new ArrayList<Situation>();
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
