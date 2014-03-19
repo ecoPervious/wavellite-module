@@ -624,7 +624,9 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?attributeValueId <" + STO.attributeValue
 				+ "> ?attributeValue .");
 		// If anchorN relates to an attribute uri
-		sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
+		// This is somehow problematic because it will match also, e.g. temporal
+		// locations
+		// sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
 		// If anchorN relates to an attribute temporal location
 		// TimePoint
 		sb.append("?elementaryInfonId ?anchorC ?attributeTimePointId .");
@@ -698,9 +700,9 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		sb.append("}");
 		// // Match relevant object that are attribute uri
-		sb.append(" optional {");
-		sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
-		sb.append("}");
+//		sb.append(" optional {");
+//		sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
+//		sb.append("}");
 		// Match relevant object that are attribute temporal location
 		// TimePoint
 		sb.append(" optional {");
@@ -815,7 +817,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected Iterator<Situation> createSituations(Model model) {
 		if (!isOpen)
 			open();
-		
+
 		List<Situation> ret = new ArrayList<Situation>();
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
