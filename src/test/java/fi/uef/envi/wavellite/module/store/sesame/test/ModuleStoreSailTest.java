@@ -18,6 +18,7 @@ import org.joda.time.format.PeriodFormatter;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.openrdf.model.ValueFactory;
@@ -47,6 +48,7 @@ import fi.uef.envi.wavellite.entity.observation.base.SensorOutputBase;
 import fi.uef.envi.wavellite.entity.situation.Attribute;
 import fi.uef.envi.wavellite.entity.situation.ElementaryInfon;
 import fi.uef.envi.wavellite.entity.situation.Polarity;
+import fi.uef.envi.wavellite.entity.situation.Relation;
 import fi.uef.envi.wavellite.entity.situation.RelevantIndividual;
 import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.entity.situation.Value;
@@ -1677,4 +1679,49 @@ public class ModuleStoreSailTest {
 
 		assertEquals(e, a);
 	}
+
+	@Test
+	public void test27a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Relation r1 = new RelationBase("r1");
+
+		store.consider(r1);
+
+		Iterator<Relation> it = store.getRelations();
+
+		List<Relation> a = Iterators.asList(it);
+
+		List<Relation> e = new ArrayList<Relation>();
+
+		Relation r2 = new RelationBase("http://example.org#r1");
+		e.add(r2);
+		
+		assertEquals(e, a);
+
+		store.close();
+	}
+	
+	@Test
+	public void test27b() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Relation r1 = new RelationBase("r1");
+
+		store.consider(r1);
+
+		Iterator<Relation> it = store.getRelations();
+
+		List<Relation> a = Iterators.asList(it);
+
+		List<Relation> e = new ArrayList<Relation>();
+
+		Relation r2 = new RelationBase("http://example.org#r2");
+		e.add(r2);
+		
+		assertNotEquals(e, a);
+
+		store.close();
+	}
+
 }

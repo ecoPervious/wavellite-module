@@ -56,6 +56,8 @@ public interface ModuleStore extends Module<Entity> {
 			ComponentPropertyValue to);
 	
 	public Iterator<Situation> getSituations(Relation relation);
+	
+	public Iterator<Relation> getRelations();
 
 	public String getNamespace();
 

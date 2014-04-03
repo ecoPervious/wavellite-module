@@ -700,9 +700,9 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		sb.append("}");
 		// // Match relevant object that are attribute uri
-//		sb.append(" optional {");
-//		sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
-//		sb.append("}");
+		// sb.append(" optional {");
+		// sb.append("?elementaryInfonId ?anchorB ?attributeUri .");
+		// sb.append("}");
 		// Match relevant object that are attribute temporal location
 		// TimePoint
 		sb.append(" optional {");
@@ -766,6 +766,18 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 
 		return createSituations(executeSparql(sb.toString()));
+	}
+
+	public Iterator<Relation> getRelations() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("construct {");
+		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <" + STO.Relation + ">");
+		sb.append("} where {");
+		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <" + STO.Relation + ">");
+		sb.append("}");
+		
+		return createRelations(executeSparql(sb.toString()));
 	}
 
 	protected abstract Model executeSparql(String sparql);
@@ -835,6 +847,27 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return ret.iterator();
 	}
 
+	protected Iterator<Relation> createRelations(Model model) {
+		if (!isOpen)
+			open();
+
+		List<Relation> ret = new ArrayList<Relation>();
+
+		Iterator<Statement> it = model.filter(null, RDF.TYPE,
+				vf.createURI(STO.Relation)).iterator();
+
+		while (it.hasNext()) {
+			Statement statement = it.next();
+			Resource subject = statement.getSubject();
+			Set<Statement> statements = Collections
+					.newSetFromMap(new ConcurrentHashMap<Statement, Boolean>());
+			getStatements(model, subject, statements);
+			ret.add(entityRepresentationSto.createRelation(statements));
+		}
+
+		return ret.iterator();
+	}
+
 	private void getStatements(Model model, Resource subject,
 			Set<Statement> statements) {
 		Iterator<Statement> it = model.filter(subject, null, null).iterator();
@@ -892,6 +925,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 		@Override
 		public void visit(Situation entity) {
+			storeAll(entityRepresentationSto.createRepresentation(entity));
+		}
+		
+		@Override
+		public void visit(Relation entity) {
 			storeAll(entityRepresentationSto.createRepresentation(entity));
 		}
 
