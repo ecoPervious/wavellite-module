@@ -54,15 +54,24 @@ public interface ModuleStore extends Module<Entity> {
 	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset,
 			ComponentProperty property, ComponentPropertyValue from,
 			ComponentPropertyValue to);
-	
+
 	public Iterator<Situation> getSituations(Relation relation);
-	
+
+	public Iterator<Situation> getSituations();
+
+	public Iterator<Situation> getSituations(Relation... relations);
+
+	public Iterator<Situation> getSituations(TemporalLocationInterval interval);
+
+	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
+			Relation... relations);
+
 	public Iterator<Relation> getRelations();
 
 	public String getNamespace();
 
 	public void open();
-	
+
 	public long size();
 
 	public void close();

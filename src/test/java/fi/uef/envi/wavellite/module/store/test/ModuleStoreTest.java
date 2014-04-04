@@ -25,6 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.util.iterators.Iterators;
 
@@ -105,6 +106,7 @@ public class ModuleStoreTest {
 	}
 
 	@Test
+	@Ignore
 	public void test1a() {
 		Iterator<SensorObservation> it = store
 				.getSensorObservations(
@@ -120,6 +122,7 @@ public class ModuleStoreTest {
 	}
 
 	@Test
+	@Ignore
 	public void test1b() {
 		Iterator<SensorObservation> it = store.getSensorObservations(
 				sensor("http://example.org#s1"),
@@ -136,6 +139,7 @@ public class ModuleStoreTest {
 	}
 
 	@Test
+	@Ignore
 	public void test2a() {
 		Iterator<DatasetObservation> it = store.getDatasetObservations(
 				dataset("http://example.org#d1"),
@@ -150,6 +154,7 @@ public class ModuleStoreTest {
 	}
 
 	@Test
+	@Ignore
 	public void test2b() {
 		Iterator<DatasetObservation> it = store.getDatasetObservations(
 				dataset("http://example.org#d1"),

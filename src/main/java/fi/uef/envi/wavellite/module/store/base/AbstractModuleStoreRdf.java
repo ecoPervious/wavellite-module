@@ -361,8 +361,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?beginningDateTime >= \"" + from + "\"^^<"
 				+ XMLSchema.DATETIME + ">");
 		sb.append(" && ");
-		sb.append("?endDateTime <= \"" + to + "\"^^<" + XMLSchema.DATETIME
-				+ ">");
+		sb.append("?endDateTime < \"" + to + "\"^^<" + XMLSchema.DATETIME + ">");
 		sb.append(")");
 		sb.append("}");
 
@@ -552,7 +551,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 							.getValueAsDateTime()) + "\"^^<"
 					+ XMLSchema.DATETIME + ">");
 			sb.append(" && ");
-			sb.append("?filteredEndDateTime <= \""
+			sb.append("?filteredEndDateTime < \""
 					+ dtf.print(to.getValueAsTemporalLocation()
 							.getValueAsDateTime()) + "\"^^<"
 					+ XMLSchema.DATETIME + ">");
@@ -585,15 +584,28 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		return createDatasetObservations(executeSparql(sb.toString()));
 	}
 
-	public Iterator<Situation> getSituations(Relation relation) {
-		if (relation == null) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [relation = null]");
+	public Iterator<Situation> getSituations() {
+		return getSituations(new Relation[] {});
+	}
 
-			return Iterators.emptyIterator();
+	public Iterator<Situation> getSituations(Relation... relations) {
+		return getSituations(null, relations);
+	}
+
+	public Iterator<Situation> getSituations(TemporalLocationInterval interval) {
+		return getSituations(interval, new Relation[] {});
+	}
+
+	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
+			Relation... relations) {
+		if (relations == null) {
+			relations = new Relation[] {};
 		}
 
-		String relationId = relation.getId();
+		if (relations.length == 0) {
+			if (log.isLoggable(Level.WARNING))
+				log.severe("Unconstrained relation [relations.length = 0]");
+		}
 
 		StringBuffer sb = new StringBuffer();
 
@@ -604,9 +616,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ "> ?elementaryInfonId .");
 		sb.append("?elementaryInfonId <" + RDF.TYPE.stringValue() + "> <"
 				+ STO.ElementaryInfon + "> .");
-		sb.append("?elementaryInfonId <" + STO.relation + "> <" + relationId
-				+ "> .");
-		sb.append("<" + relationId + "> <" + RDF.TYPE.stringValue() + "> <"
+		sb.append("?elementaryInfonId <" + STO.relation + "> ?relationId .");
+		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <"
 				+ STO.Relation + "> .");
 		sb.append("?elementaryInfonId <" + STO.polarity + "> ?polarityId .");
 		// If anchorN relates to a relevant individual
@@ -633,7 +644,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?attributeTimePointId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimePoint + "> .");
 		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
-				+ "> ?dateTime .");
+				+ "> ?beginningDateTime .");
 		// TimeInterval
 		sb.append("?elementaryInfonId ?anchorD ?attributeTimeIntervalId .");
 		sb.append("?attributeTimeIntervalId <" + RDF.TYPE.stringValue() + "> <"
@@ -678,8 +689,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ STO.Situation + "> .");
 		sb.append("?situationId <" + STO.supportedInfon
 				+ "> ?elementaryInfonId .");
-		sb.append("?elementaryInfonId <" + STO.relation + "> <" + relationId
-				+ "> .");
+		sb.append("?elementaryInfonId <" + STO.relation + "> ?relationId .");
 		sb.append("?elementaryInfonId <" + STO.polarity + "> ?polarityId .");
 		// Match relevant objects that are relevant individuals
 		sb.append(" optional {");
@@ -710,7 +720,9 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("?attributeTimePointId <" + RDF.TYPE.stringValue() + "> <"
 				+ WOE.TimePoint + "> .");
 		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
-				+ "> ?dateTime .");
+				+ "> ?beginningDateTime .");
+		sb.append("?attributeTimePointId <" + Time.inXSDDateTime
+				+ "> ?endDateTime .");
 		sb.append("}");
 		// TimeInterval
 		sb.append(" optional {");
@@ -719,7 +731,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ WOE.TimeInterval + "> .");
 		sb.append("?attributeTimeIntervalId <" + Time.hasBeginning
 				+ "> ?beginningId .");
+		sb.append("?beginningId <" + RDF.TYPE.stringValue() + "> <"
+				+ WOE.TimePoint + "> .");
 		sb.append("?attributeTimeIntervalId <" + Time.hasEnd + "> ?endId .");
+		sb.append("?endId <" + RDF.TYPE.stringValue() + "> <" + WOE.TimePoint
+				+ "> .");
 		sb.append("?beginningId <" + Time.inXSDDateTime
 				+ "> ?beginningDateTime .");
 		sb.append("?endId <" + Time.inXSDDateTime + "> ?endDateTime .");
@@ -763,20 +779,68 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ "> .");
 		sb.append("?valueId <" + STO.asURI.attributeValue + "> ?value .");
 		sb.append("}");
+
+		// Filter relations
+		if (relations.length > 0) {
+			sb.append("filter (");
+
+			for (int i = 0; i < relations.length; i++) {
+				if (i > 0)
+					sb.append(" || ");
+
+				sb.append("?relationId = <" + relations[i].getId() + ">");
+			}
+
+			sb.append(")");
+		}
+
+		// Filter beginning and end date time
+		if (interval != null) {
+			sb.append("filter (");
+
+			TemporalLocationDateTime start = interval.getStart();
+			TemporalLocationDateTime end = interval.getEnd();
+
+			if (start != null) {
+				sb.append("?beginningDateTime >= \""
+						+ dtf.print(start.getValueAsDateTime()) + "\"^^<"
+						+ XMLSchema.DATETIME + ">");
+			}
+
+			if (start != null && end != null) {
+				sb.append(" && ");
+			}
+
+			if (end != null) {
+				sb.append("?endDateTime < \""
+						+ dtf.print(end.getValueAsDateTime()) + "\"^^<"
+						+ XMLSchema.DATETIME + ">");
+			}
+
+			sb.append(")");
+		}
+
 		sb.append("}");
 
 		return createSituations(executeSparql(sb.toString()));
+	}
+
+	public Iterator<Situation> getSituations(Relation relation) {
+		return getSituations(Collections.singletonList(relation).toArray(
+				new Relation[] {}));
 	}
 
 	public Iterator<Relation> getRelations() {
 		StringBuffer sb = new StringBuffer();
 
 		sb.append("construct {");
-		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <" + STO.Relation + ">");
+		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <"
+				+ STO.Relation + ">");
 		sb.append("} where {");
-		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <" + STO.Relation + ">");
+		sb.append("?relationId <" + RDF.TYPE.stringValue() + "> <"
+				+ STO.Relation + ">");
 		sb.append("}");
-		
+
 		return createRelations(executeSparql(sb.toString()));
 	}
 
@@ -835,6 +899,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
 				vf.createURI(STO.Situation)).iterator();
 
+		System.out.println(model.size());
+		
 		while (it.hasNext()) {
 			Statement statement = it.next();
 			Resource subject = statement.getSubject();
@@ -927,7 +993,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		public void visit(Situation entity) {
 			storeAll(entityRepresentationSto.createRepresentation(entity));
 		}
-		
+
 		@Override
 		public void visit(Relation entity) {
 			storeAll(entityRepresentationSto.createRepresentation(entity));
