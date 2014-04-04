@@ -898,8 +898,6 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
 				vf.createURI(STO.Situation)).iterator();
-
-		System.out.println(model.size());
 		
 		while (it.hasNext()) {
 			Statement statement = it.next();
