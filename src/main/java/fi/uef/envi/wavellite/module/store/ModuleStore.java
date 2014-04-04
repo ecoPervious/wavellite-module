@@ -64,6 +64,9 @@ public interface ModuleStore extends Module<Entity> {
 	public Iterator<Situation> getSituations(TemporalLocationInterval interval);
 
 	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
+			Relation relation);
+	
+	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
 			Relation... relations);
 
 	public Iterator<Relation> getRelations();

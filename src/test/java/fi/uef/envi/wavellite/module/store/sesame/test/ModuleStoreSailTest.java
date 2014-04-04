@@ -1794,6 +1794,44 @@ public class ModuleStoreSailTest {
 
 		assertEquals(e, a);
 	}
+	
+	@Test
+	public void test28c() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		Situation s1 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("http://example.org#i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("http://example.org#storm"));
+
+		Situation s2 = new SituationBase("http://example.org#s2");
+		ElementaryInfon i2 = new ElementaryInfonBase("http://example.org#i2");
+		s2.addSupportedInfon(i2);
+		i2.setRelation(new RelationBase("http://example.org#pollen"));
+
+		Situation s3 = new SituationBase("http://example.org#s3");
+		ElementaryInfon i3 = new ElementaryInfonBase("http://example.org#i3");
+		s3.addSupportedInfon(i3);
+		i3.setRelation(new RelationBase("http://example.org#driver"));
+
+		store.consider(s1);
+		store.consider(s2);
+		store.consider(s3);
+
+		TemporalLocationInterval interval = null;
+		Relation relation = null;
+		
+		Iterator<Situation> it = store.getSituations(interval, relation);
+
+		Set<Situation> a = new HashSet<Situation>(Iterators.asList(it));
+
+		Set<Situation> e = new HashSet<Situation>();
+		e.add(s1);
+		e.add(s2);
+		e.add(s3);
+
+		assertEquals(e, a);
+	}
 
 	@Test
 	public void test29a() {

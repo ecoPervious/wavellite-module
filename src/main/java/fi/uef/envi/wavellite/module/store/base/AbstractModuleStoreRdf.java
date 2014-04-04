@@ -597,6 +597,14 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	}
 
 	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
+			Relation relation) {
+		if (relation == null)
+			return getSituations(interval, new Relation[] {});
+
+		return getSituations(interval, new Relation[] { relation });
+	}
+
+	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
 			Relation... relations) {
 		if (relations == null) {
 			relations = new Relation[] {};
@@ -898,7 +906,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 		Iterator<Statement> it = model.filter(null, RDF.TYPE,
 				vf.createURI(STO.Situation)).iterator();
-		
+
 		while (it.hasNext()) {
 			Statement statement = it.next();
 			Resource subject = statement.getSubject();
