@@ -91,8 +91,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected EntityRepresentationRdfQb entityRepresentationQb;
 	protected EntityRepresentationRdfSto entityRepresentationSto;
 	protected MeasurementResultTranslatorBase measurementResultConversion;
-
-	private boolean isOpen = false;
+	protected boolean isOpen = false;
+	
 	private EntityVisitor entityVisitor = new ThisEntityVisitor();
 	private static final ValueFactory vf = ValueFactoryImpl.getInstance();
 	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
@@ -136,6 +136,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 			measurementResultConversion = new MeasurementResultTranslatorBase();
 
 		isOpen = true;
+	}
+	
+	@Override
+	public void close() {
+		isOpen = false;
 	}
 
 	@Override

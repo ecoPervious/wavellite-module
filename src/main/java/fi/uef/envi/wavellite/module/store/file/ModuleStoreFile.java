@@ -41,6 +41,8 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	private long size = 0L;
 	private FileOutputStream outputStream;
 	private RDFWriter rdfWriter;
+	private File file;
+	private RDFFormat rdfFormat;
 
 	public ModuleStoreFile(File file) {
 		this(file, null);
@@ -54,9 +56,22 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	public ModuleStoreFile(File file, String defaultNamespace,
 			RDFFormat rdfFormat) {
 		super(defaultNamespace);
+		
+		this.file = file;
+		this.rdfFormat = rdfFormat;
+		
+		open();
+	}
 
+	@Override
+	public void open() {
+		if (isOpen)
+			return;
+		
+		super.open();
+		
 		try {
-			outputStream = new FileOutputStream(file);
+			outputStream = new FileOutputStream(file, true);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -69,7 +84,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	@Override
 	public void storeAll(Set<Statement> statements) {
 		for (Statement statement : statements)
@@ -109,6 +124,8 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		
+		super.close();
 	}
 
 }
