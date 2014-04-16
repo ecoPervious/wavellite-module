@@ -56,10 +56,15 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	public ModuleStoreFile(File file, String defaultNamespace,
 			RDFFormat rdfFormat) {
 		super(defaultNamespace);
+
+		if (file == null)
+			throw new NullPointerException("[file = null]");
+		if (rdfFormat == null)
+			rdfFormat = RDFFormat.NTRIPLES;
 		
 		this.file = file;
 		this.rdfFormat = rdfFormat;
-		
+
 		open();
 	}
 
@@ -67,9 +72,18 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	public void open() {
 		if (isOpen)
 			return;
-		
+
 		super.open();
-		
+
+		// Make sure the file exists
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		try {
 			outputStream = new FileOutputStream(file, true);
 		} catch (IOException e) {
@@ -84,7 +98,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public void storeAll(Set<Statement> statements) {
 		for (Statement statement : statements)
@@ -100,7 +114,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public Model executeSparql(String sparql) {
 		throw new UnsupportedOperationException();
@@ -110,7 +124,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	public long size() {
 		return size;
 	}
-	
+
 	@Override
 	public void close() {
 		try {
@@ -124,7 +138,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		super.close();
 	}
 
