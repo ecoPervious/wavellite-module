@@ -142,6 +142,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	public void close() {
 		isOpen = false;
 	}
+	
+	@Override
+	public void flush() {
+		
+	}
 
 	@Override
 	public void consider(Entity entity) {

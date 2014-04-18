@@ -126,6 +126,15 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	}
 
 	@Override
+	public void flush() {
+		try {
+			outputStream.flush();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	@Override
 	public void close() {
 		try {
 			rdfWriter.endRDF();

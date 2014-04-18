@@ -78,5 +78,7 @@ public interface ModuleStore extends Module<Entity> {
 	public long size();
 
 	public void close();
+	
+	public void flush();
 
 }
