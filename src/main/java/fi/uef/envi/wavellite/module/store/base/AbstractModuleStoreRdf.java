@@ -92,7 +92,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected EntityRepresentationRdfSto entityRepresentationSto;
 	protected MeasurementResultTranslatorBase measurementResultConversion;
 	protected boolean isOpen = false;
-	
+
 	private EntityVisitor entityVisitor = new ThisEntityVisitor();
 	private static final ValueFactory vf = ValueFactoryImpl.getInstance();
 	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
@@ -137,15 +137,15 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 		isOpen = true;
 	}
-	
+
 	@Override
 	public void close() {
 		isOpen = false;
 	}
-	
+
 	@Override
 	public void flush() {
-		
+
 	}
 
 	@Override
@@ -379,6 +379,11 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	}
 
 	@Override
+	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset) {
+		return getDatasetObservations(dataset, null, null, null);
+	}
+
+	@Override
 	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset,
 			ComponentProperty property, ComponentPropertyValue from,
 			ComponentPropertyValue to) {
@@ -390,54 +395,63 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		}
 
 		if (property == null) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [property = null]");
-
-			return Iterators.emptyIterator();
+			if (log.isLoggable(Level.INFO))
+				log.info("Unconstrained query [property = null]");
 		}
 
-		if (from == null) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [from = null]");
+		Object fromValue = null;
+		Object toValue = null;
+		String propertyId = null;
 
-			return Iterators.emptyIterator();
-		}
+		if (property != null) {
+			propertyId = property.getId();
 
-		if (to == null) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [to = null]");
+			if (from == null) {
+				if (log.isLoggable(Level.INFO))
+					log.info("Returned empty iterator [property = " + property
+							+ "; from = null]");
 
-			return Iterators.emptyIterator();
-		}
+				return Iterators.emptyIterator();
+			}
 
-		Object fromValue = from.getValue();
-		Object toValue = to.getValue();
+			if (to == null) {
+				if (log.isLoggable(Level.INFO))
+					log.info("Returned empty iterator [property = " + property
+							+ "; to = null]");
 
-		if (fromValue == null) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [fromValue = null]");
+				return Iterators.emptyIterator();
+			}
 
-			return Iterators.emptyIterator();
-		}
+			fromValue = from.getValue();
+			toValue = to.getValue();
 
-		if (toValue == null) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [toValue = null]");
+			if (fromValue == null) {
+				if (log.isLoggable(Level.SEVERE))
+					log.severe("Returned empty iterator [property = "
+							+ property + "; fromValue = null]");
 
-			return Iterators.emptyIterator();
-		}
+				return Iterators.emptyIterator();
+			}
 
-		if (!(fromValue.getClass().isInstance(toValue))) {
-			if (log.isLoggable(Level.SEVERE))
-				log.severe("Returned empty iterator [fromValue = "
-						+ fromValue.getClass().getName() + "; toValue = "
-						+ toValue.getClass().getName() + "]");
+			if (toValue == null) {
+				if (log.isLoggable(Level.SEVERE))
+					log.severe("Returned empty iterator [property = "
+							+ property + "; toValue = null]");
 
-			return Iterators.emptyIterator();
+				return Iterators.emptyIterator();
+			}
+
+			if (!(fromValue.getClass().isInstance(toValue))) {
+				if (log.isLoggable(Level.SEVERE))
+					log.severe("Returned empty iterator [fromValue = "
+							+ fromValue.getClass().getName() + "; toValue = "
+							+ toValue.getClass().getName() + "]");
+
+				return Iterators.emptyIterator();
+			}
 		}
 
 		String datasetId = dataset.getId();
-		String propertyId = property.getId();
 
 		StringBuffer sb = new StringBuffer();
 
@@ -531,64 +545,73 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		// The case in which the filtered property is for a time point
 		sb.append("{");
-		sb.append("?observationId <" + propertyId
-				+ "> ?filteredComponentPropertyValue .");
-		if (from.getValue() instanceof TemporalLocation) {
-			sb.append("{");
-			sb.append("?filteredComponentPropertyValue <"
-					+ RDF.TYPE.stringValue() + "> <" + WOE.TimePoint + "> .");
-			sb.append("?filteredComponentPropertyValue <" + Time.inXSDDateTime
-					+ "> ?filteredBeginningDateTime .");
-			sb.append("?filteredComponentPropertyValue <" + Time.inXSDDateTime
-					+ "> ?filteredEndDateTime .");
+
+		if (propertyId != null) {
+			sb.append("?observationId <" + propertyId
+					+ "> ?filteredComponentPropertyValue .");
+			if (fromValue instanceof TemporalLocation) {
+				sb.append("{");
+				sb.append("?filteredComponentPropertyValue <"
+						+ RDF.TYPE.stringValue() + "> <" + WOE.TimePoint
+						+ "> .");
+				sb.append("?filteredComponentPropertyValue <"
+						+ Time.inXSDDateTime + "> ?filteredBeginningDateTime .");
+				sb.append("?filteredComponentPropertyValue <"
+						+ Time.inXSDDateTime + "> ?filteredEndDateTime .");
+				sb.append("}");
+				sb.append(" union ");
+				sb.append("{");
+				sb.append("?filteredComponentPropertyValue <"
+						+ RDF.TYPE.stringValue() + "> <" + WOE.TimeInterval
+						+ "> .");
+				sb.append("?filteredComponentPropertyValue <"
+						+ Time.hasBeginning + "> ?filteredBeginningId .");
+				sb.append("?filteredComponentPropertyValue <" + Time.hasEnd
+						+ "> ?filteredEndId .");
+				sb.append("?filteredBeginningId <" + Time.inXSDDateTime
+						+ "> ?filteredBeginningDateTime .");
+				sb.append("?filteredEndId <" + Time.inXSDDateTime
+						+ "> ?filteredEndDateTime .");
+				sb.append("}");
+				sb.append(" filter (");
+				sb.append("?filteredBeginningDateTime >= \""
+						+ dtf.print(from.getValueAsTemporalLocation()
+								.getValueAsDateTime()) + "\"^^<"
+						+ XMLSchema.DATETIME + ">");
+				sb.append(" && ");
+				sb.append("?filteredEndDateTime < \""
+						+ dtf.print(to.getValueAsTemporalLocation()
+								.getValueAsDateTime()) + "\"^^<"
+						+ XMLSchema.DATETIME + ">");
+				sb.append(")");
+			}
+			// The case in which the filtered property is for a double value
+			else if (fromValue instanceof Double) {
+				sb.append(" filter (");
+				sb.append("?filteredComponentPropertyValue >= \""
+						+ from.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE
+						+ ">");
+				sb.append(" && ");
+				sb.append("?filteredComponentPropertyValue <= \""
+						+ to.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE
+						+ ">");
+				sb.append(")");
+			}
+			// The case in which the filtered property is for a integer value
+			else if (fromValue instanceof Integer) {
+				sb.append(" filter (");
+				sb.append("?filteredComponentPropertyValue >= \""
+						+ from.getValueAsInteger() + "\"^^<" + XMLSchema.INT
+						+ ">");
+				sb.append(" && ");
+				sb.append("?filteredComponentPropertyValue <= \""
+						+ to.getValueAsInteger() + "\"^^<" + XMLSchema.INT
+						+ ">");
+				sb.append(")");
+			}
+			// TODO how about other types?
 			sb.append("}");
-			sb.append(" union ");
-			sb.append("{");
-			sb.append("?filteredComponentPropertyValue <"
-					+ RDF.TYPE.stringValue() + "> <" + WOE.TimeInterval + "> .");
-			sb.append("?filteredComponentPropertyValue <" + Time.hasBeginning
-					+ "> ?filteredBeginningId .");
-			sb.append("?filteredComponentPropertyValue <" + Time.hasEnd
-					+ "> ?filteredEndId .");
-			sb.append("?filteredBeginningId <" + Time.inXSDDateTime
-					+ "> ?filteredBeginningDateTime .");
-			sb.append("?filteredEndId <" + Time.inXSDDateTime
-					+ "> ?filteredEndDateTime .");
-			sb.append("}");
-			sb.append(" filter (");
-			sb.append("?filteredBeginningDateTime >= \""
-					+ dtf.print(from.getValueAsTemporalLocation()
-							.getValueAsDateTime()) + "\"^^<"
-					+ XMLSchema.DATETIME + ">");
-			sb.append(" && ");
-			sb.append("?filteredEndDateTime < \""
-					+ dtf.print(to.getValueAsTemporalLocation()
-							.getValueAsDateTime()) + "\"^^<"
-					+ XMLSchema.DATETIME + ">");
-			sb.append(")");
 		}
-		// The case in which the filtered property is for a double value
-		else if (fromValue instanceof Double && toValue instanceof Double) {
-			sb.append(" filter (");
-			sb.append("?filteredComponentPropertyValue >= \""
-					+ from.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE
-					+ ">");
-			sb.append(" && ");
-			sb.append("?filteredComponentPropertyValue <= \""
-					+ to.getValueAsDouble() + "\"^^<" + XMLSchema.DOUBLE + ">");
-			sb.append(")");
-		}
-		// The case in which the filtered property is for a integer value
-		else if (fromValue instanceof Integer && toValue instanceof Integer) {
-			sb.append(" filter (");
-			sb.append("?filteredComponentPropertyValue >= \""
-					+ from.getValueAsInteger() + "\"^^<" + XMLSchema.INT + ">");
-			sb.append(" && ");
-			sb.append("?filteredComponentPropertyValue <= \""
-					+ to.getValueAsInteger() + "\"^^<" + XMLSchema.INT + ">");
-			sb.append(")");
-		}
-		sb.append("}");
 		sb.append("}");
 
 		return createDatasetObservations(executeSparql(sb.toString()));

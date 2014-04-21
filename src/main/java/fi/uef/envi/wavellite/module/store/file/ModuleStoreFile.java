@@ -61,7 +61,7 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 			throw new NullPointerException("[file = null]");
 		if (rdfFormat == null)
 			rdfFormat = RDFFormat.NTRIPLES;
-		
+
 		this.file = file;
 		this.rdfFormat = rdfFormat;
 
@@ -133,9 +133,12 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public void close() {
+		if (!isOpen)
+			return;
+		
 		try {
 			rdfWriter.endRDF();
 		} catch (RDFHandlerException e) {

@@ -51,6 +51,8 @@ public interface ModuleStore extends Module<Entity> {
 			Property property, Feature feature,
 			TemporalLocationInterval interval);
 
+	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset);
+
 	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset,
 			ComponentProperty property, ComponentPropertyValue from,
 			ComponentPropertyValue to);
@@ -65,7 +67,7 @@ public interface ModuleStore extends Module<Entity> {
 
 	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
 			Relation relation);
-	
+
 	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
 			Relation... relations);
 
@@ -78,7 +80,7 @@ public interface ModuleStore extends Module<Entity> {
 	public long size();
 
 	public void close();
-	
+
 	public void flush();
 
 }
