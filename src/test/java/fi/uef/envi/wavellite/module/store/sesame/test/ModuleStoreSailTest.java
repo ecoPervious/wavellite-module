@@ -601,6 +601,45 @@ public class ModuleStoreSailTest {
 	}
 
 	@Test
+	public void test8c() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DatasetObservation o1 = new DatasetObservationBase("o1");
+		o1.setDataset(dataset("d1"));
+		o1.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime("dt1", dtf
+								.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o1.addComponent(componentProperty("cp1"), componentPropertyValue(0.0));
+		store.consider(o1);
+
+		Iterator<DatasetObservation> it = store
+				.getDatasetObservations(dataset("http://example.org#d1"));
+
+		List<DatasetObservation> a = Iterators.asList(it);
+
+		List<DatasetObservation> e = new ArrayList<DatasetObservation>();
+
+		DatasetObservation o2 = new DatasetObservationBase(
+				"http://example.org#o1");
+		o2.setDataset(dataset("http://example.org#d1"));
+		o2.addComponent(
+				componentProperty(SDMX.Dimension.timePeriod),
+				new ComponentPropertyValueTemporalLocation(
+						new TemporalLocationDateTime(
+								"http://example.org#dt1",
+								dtf.parseDateTime("2014-02-14T00:00:00.000+02:00"))));
+		o2.addComponent(componentProperty("http://example.org#cp1"),
+				componentPropertyValue(0.0));
+		e.add(o2);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
+
+	@Test
 	public void test9a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
 
@@ -1794,7 +1833,7 @@ public class ModuleStoreSailTest {
 
 		assertEquals(e, a);
 	}
-	
+
 	@Test
 	public void test28c() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
@@ -1820,7 +1859,7 @@ public class ModuleStoreSailTest {
 
 		TemporalLocationInterval interval = null;
 		Relation relation = null;
-		
+
 		Iterator<Situation> it = store.getSituations(interval, relation);
 
 		Set<Situation> a = new HashSet<Situation>(Iterators.asList(it));

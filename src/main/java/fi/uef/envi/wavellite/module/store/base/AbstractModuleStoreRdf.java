@@ -543,10 +543,10 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append("}");
 		sb.append("}");
 		sb.append("}");
-		// The case in which the filtered property is for a time point
-		sb.append("{");
-
+		// PropertyId may be null in case of an unconstrained query
 		if (propertyId != null) {
+			// The case in which the filtered property is for a time point
+			sb.append("{");
 			sb.append("?observationId <" + propertyId
 					+ "> ?filteredComponentPropertyValue .");
 			if (fromValue instanceof TemporalLocation) {
