@@ -126,15 +126,21 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 		this.user = user;
 		this.password = password;
 		this.reasoningType = reasoningType;
+		this.defaultNamespace = defaultNamespace;
 
 		this.url = protocol + "://" + host + ":" + port;
 
+		open();
+	}
+
+	@Override
+	public void open() {		
 		ConnectionConfiguration conf = ConnectionConfiguration.to(database)
 				.server(url).credentials(user, password);
 
 		try {
-			this.conn = conf.connect();
-			this.namespaces = conn.namespaces();
+			conn = conf.connect();
+			namespaces = conn.namespaces();
 
 			if (defaultNamespace == null) {
 				for (Namespace namespace : namespaces) {
@@ -145,10 +151,10 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 		} catch (StardogException e) {
 			e.printStackTrace();
 		}
-
-		this.defaultNamespace = defaultNamespace;
+		
+		super.open();
 	}
-
+	
 	public String getProtocol() {
 		return protocol;
 	}

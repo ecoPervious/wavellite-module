@@ -58,8 +58,8 @@ import fi.uef.envi.wavellite.vocabulary.SDMX;
 public class ModuleStoreTest {
 
 	private static ModuleStore store;
-	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser()
-			.withOffsetParsed();
+	private static final DateTimeFormatter dtf = ISODateTimeFormat
+			.dateTimeParser().withOffsetParsed();
 
 	private static double days = 0.01;
 	private static final DateTime start = dtf
@@ -69,8 +69,8 @@ public class ModuleStoreTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-//		 store = new ModuleStoreStardog("localhost", "test",
-//		 "http://example.org#");
+		// store = new ModuleStoreStardog("localhost", "test",
+		// "http://example.org#");
 		store = new ModuleStoreSail("http://example.org#");
 
 		long t1 = System.currentTimeMillis();
