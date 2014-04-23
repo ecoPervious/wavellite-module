@@ -8,6 +8,7 @@ package fi.uef.envi.wavellite.module.store.base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections4.IteratorUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openrdf.model.Model;
@@ -94,6 +97,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected boolean isOpen = false;
 
 	private EntityVisitor entityVisitor = new ThisEntityVisitor();
+	private Comparator<SensorObservation> sensorObservationTimeComparator = new SensorObservationTimeComparator();
 	private static final ValueFactory vf = ValueFactoryImpl.getInstance();
 	private static final DateTimeFormatter dtf = ISODateTimeFormat.dateTime()
 			.withOffsetParsed();
@@ -166,6 +170,13 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	public Iterator<SensorObservation> getSensorObservations(Sensor sensor,
 			Property property, Feature feature,
 			TemporalLocationInterval interval) {
+		return getSensorObservations(sensor, property, feature, interval, false);
+	}
+
+	@Override
+	public Iterator<SensorObservation> getSensorObservations(Sensor sensor,
+			Property property, Feature feature,
+			TemporalLocationInterval interval, boolean sort) {
 		if (interval == null) {
 			if (log.isLoggable(Level.SEVERE))
 				log.severe("Returned empty iterator [interval = null]");
@@ -375,7 +386,17 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append(")");
 		sb.append("}");
 
-		return createSensorObservations(executeSparql(sb.toString()));
+		Iterator<SensorObservation> it = createSensorObservations(executeSparql(sb
+				.toString()));
+
+		if (!sort)
+			return it;
+
+		List<SensorObservation> list = IteratorUtils.toList(it);
+
+		Collections.sort(list, sensorObservationTimeComparator);
+		
+		return list.iterator();
 	}
 
 	@Override
@@ -1061,6 +1082,58 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		@Override
 		public void visit(Dataset entity) {
 			storeAll(entityRepresentationQb.createRepresentation(entity));
+		}
+
+	}
+
+	private class SensorObservationTimeComparator implements
+			Comparator<SensorObservation> {
+
+		@Override
+		public int compare(SensorObservation o1, SensorObservation o2) {
+			TemporalLocation l1 = o1.getTemporalLocation();
+			TemporalLocation l2 = o2.getTemporalLocation();
+			
+			if (l1 == null || l2 == null)
+				throw new NullPointerException("Cannot compare time [l1 = "
+						+ l1 + "; l2 = " + l2 + "]");
+
+			if (l1 instanceof TemporalLocationDateTime
+					&& l2 instanceof TemporalLocationDateTime) {
+				DateTime t1 = l1.getValueAsDateTime();
+				DateTime t2 = l2.getValueAsDateTime();
+
+				if (t1 == null || t2 == null)
+					throw new NullPointerException("Cannot compare time [t1 = "
+							+ t1 + "; t2 = " + t2 + "]");
+				
+				if (t1.isBefore(t2))
+					return -1;
+				if (t1.isAfter(t2))
+					return 1;
+
+				return 0;
+			}
+
+			if (l1 instanceof TemporalLocationInterval
+					&& l2 instanceof TemporalLocationInterval) {
+				Interval i1 = l1.getValueAsInterval();
+				Interval i2 = l2.getValueAsInterval();
+
+				if (i1 == null || i2 == null)
+					throw new NullPointerException("Cannot compare time [i1 = "
+							+ i1 + "; i2 = " + i2 + "]");
+
+				if (i1.isBefore(i2))
+					return -1;
+				if (i1.isAfter(i2))
+					return 1;
+
+				return 0;
+			}
+
+			throw new RuntimeException("Cannot compare time [l1 = " + l1
+					+ "; l2 = " + l2 + "]");
 		}
 
 	}

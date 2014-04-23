@@ -50,6 +50,10 @@ public interface ModuleStore extends Module<Entity> {
 	public Iterator<SensorObservation> getSensorObservations(Sensor sensor,
 			Property property, Feature feature,
 			TemporalLocationInterval interval);
+	
+	public Iterator<SensorObservation> getSensorObservations(Sensor sensor,
+			Property property, Feature feature,
+			TemporalLocationInterval interval, boolean sort);
 
 	public Iterator<DatasetObservation> getDatasetObservations(Dataset dataset);
 

@@ -435,6 +435,70 @@ public class ModuleStoreSailTest {
 
 		store.close();
 	}
+	
+	@Test
+	public void test6a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		SensorObservation o1 = new SensorObservationBase("o1");
+		o1.setSensor(sensor("s1"));
+		o1.setProperty(property("p1"));
+		o1.setFeature(feature("f1"));
+		o1.setSensorOutput(new SensorOutputBase("so1",
+				new ObservationValueDouble("ov1", 0.0)));
+		o1.setTemporalLocation(new TemporalLocationDateTime("tl1", dtf
+				.parseDateTime("2014-02-14T00:01:00.000+02:00")));
+		store.consider(o1);
+		
+		SensorObservation o2 = new SensorObservationBase("o2");
+		o2.setSensor(sensor("s1"));
+		o2.setProperty(property("p1"));
+		o2.setFeature(feature("f1"));
+		o2.setSensorOutput(new SensorOutputBase("so2",
+				new ObservationValueDouble("ov2", 0.0)));
+		o2.setTemporalLocation(new TemporalLocationDateTime("tl2", dtf
+				.parseDateTime("2014-02-14T00:00:00.000+02:00")));
+		store.consider(o2);
+
+		Iterator<SensorObservation> it = store.getSensorObservations(
+				sensor("http://example.org#s1"),
+				property("http://example.org#p1"),
+				feature("http://example.org#f1"),
+				interval(dateTime(2014, 2, 10, 0, 0, 0),
+						dateTime(2014, 2, 15, 0, 0, 0)), true);
+
+		List<SensorObservation> a = Iterators.asList(it);
+
+		List<SensorObservation> e = new ArrayList<SensorObservation>();
+
+		SensorObservation o3 = new SensorObservationBase(
+				"http://example.org#o2");
+		o3.setSensor(sensor("http://example.org#s1"));
+		o3.setProperty(property("http://example.org#p1"));
+		o3.setFeature(feature("http://example.org#f1"));
+		o3.setSensorOutput(new SensorOutputBase("http://example.org#so2",
+				new ObservationValueDouble("http://example.org#ov2", 0.0)));
+		o3.setTemporalLocation(new TemporalLocationDateTime(
+				"http://example.org#tl2", dtf
+						.parseDateTime("2014-02-14T00:00:00.000+02:00")));
+		e.add(o3);
+		
+		SensorObservation o4 = new SensorObservationBase(
+				"http://example.org#o1");
+		o4.setSensor(sensor("http://example.org#s1"));
+		o4.setProperty(property("http://example.org#p1"));
+		o4.setFeature(feature("http://example.org#f1"));
+		o4.setSensorOutput(new SensorOutputBase("http://example.org#so1",
+				new ObservationValueDouble("http://example.org#ov1", 0.0)));
+		o4.setTemporalLocation(new TemporalLocationDateTime(
+				"http://example.org#tl1", dtf
+						.parseDateTime("2014-02-14T00:01:00.000+02:00")));
+		e.add(o4);
+
+		assertEquals(e, a);
+
+		store.close();
+	}
 
 	@Test
 	public void test7a() {
