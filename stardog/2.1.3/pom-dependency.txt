@@ -1,4 +1,4 @@
-	<dependency>
+ 	<dependency>
 		<groupId>aopalliance</groupId>
 		<artifactId>aopalliance</artifactId>
 		<version>1.0</version>
@@ -24,9 +24,9 @@
         <version>1.4</version>
     </dependency>
 	<dependency>
-    	<groupId>org.apache.commons</groupId>
-    	<artifactId>commons-compress</artifactId>
-    	<version>1.6</version>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-compress</artifactId>
+		<version>1.6</version>
 	</dependency>
     <dependency>
         <groupId>commons-httpclient</groupId>
@@ -64,49 +64,49 @@
         <version>1.0.0</version>
     </dependency>
 	<dependency>
-    	<groupId>com.google.guava</groupId>
-    	<artifactId>guava</artifactId>
-    	<version>15.0</version>
+	    <groupId>com.google.guava</groupId>
+	    <artifactId>guava</artifactId>
+	    <version>15.0</version>
 	</dependency>
 	<dependency>
-    	<groupId>com.google.inject</groupId>
-    	<artifactId>guice</artifactId>
-    	<version>3.0</version>
+		<groupId>com.google.inject</groupId>
+		<artifactId>guice</artifactId>
+		<version>3.0</version>
 	</dependency>
 	<dependency>
-    	<groupId>com.google.inject.extensions</groupId>
-    	<artifactId>guice-assistedinject</artifactId>
-    	<version>3.0</version>
+		<groupId>com.google.inject.extensions</groupId>
+		<artifactId>guice-assistedinject</artifactId>
+		<version>3.0</version>
 	</dependency>
 	<dependency>
-    	<groupId>com.google.inject.extensions</groupId>
-    	<artifactId>guice-multibindings</artifactId>
-    	<version>3.0</version>
+		<groupId>com.google.inject.extensions</groupId>
+		<artifactId>guice-multibindings</artifactId>
+		<version>3.0</version>
 	</dependency>
 	<dependency>
-   		<groupId>com.google.inject.extensions</groupId>
-    	<artifactId>guice-throwingproviders</artifactId>
-    	<version>3.0</version>
+		<groupId>com.google.inject.extensions</groupId>
+		<artifactId>guice-throwingproviders</artifactId>
+		<version>3.0</version>
 	</dependency>
 	<dependency>
-    	<groupId>com.carrotsearch</groupId>
-    	<artifactId>hppc</artifactId>
-    	<version>0.5.2</version>
+		<groupId>com.carrotsearch</groupId>
+		<artifactId>hppc</artifactId>
+		<version>0.5.2</version>
 	</dependency>
 	<dependency>
-    	<groupId>com.fasterxml.jackson.core</groupId>
+		<groupId>com.fasterxml.jackson.core</groupId>
     	<artifactId>jackson-annotations</artifactId>
     	<version>2.1.4</version>
 	</dependency>
 	<dependency>
-   		<groupId>com.fasterxml.jackson.core</groupId>
-    	<artifactId>jackson-core</artifactId>
-    	<version>2.2.1</version>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-core</artifactId>
+		<version>2.2.1</version>
 	</dependency>
 	<dependency>
-   		<groupId>com.fasterxml.jackson.core</groupId>
-    	<artifactId>jackson-databind</artifactId>
-    	<version>2.1.4</version>
+		<groupId>com.fasterxml.jackson.core</groupId>
+		<artifactId>jackson-databind</artifactId>
+		<version>2.1.4</version>
 	</dependency>
     <dependency>
         <groupId>javax.inject</groupId>
@@ -275,11 +275,6 @@
     </dependency>
     <dependency>
         <groupId>com.clarkparsia</groupId>
-        <artifactId>stardog-reasoning-shared</artifactId>
-        <version>2.1.3</version>
-    </dependency>
-    <dependency>
-        <groupId>com.clarkparsia</groupId>
         <artifactId>stardog-reasoning-snarl-client</artifactId>
         <version>2.1.3</version>
     </dependency>
@@ -318,4 +313,3 @@
         <artifactId>stardog-watchdog-snarl-shared</artifactId>
         <version>2.1.3</version>
     </dependency>
-            
