@@ -54,7 +54,7 @@
         <version>2.0.2</version>
     </dependency>
     <dependency>
-        <groupId>cp-common-utils</groupId>
+        <groupId>com.clarkparsia</groupId>
         <artifactId>cp-common-utils</artifactId>
         <version>3.1.1</version>
     </dependency>
