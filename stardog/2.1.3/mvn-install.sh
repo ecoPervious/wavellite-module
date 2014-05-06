@@ -1,0 +1,44 @@
+STARDOG_HOME=/opt/stardog-2.1.3
+
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=blackout -Dversion=1.1.5 -Dfile=$STARDOG_HOME/client/api/blackout-1.1.5.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=cglib -DartifactId=cglib -Dversion=2.2.1-v20090111 -Dfile=$STARDOG_HOME/client/api/cglib-2.2.1-v20090111.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=cp-common-openrdf -Dversion=2.0.2 -Dfile=$STARDOG_HOME/client/api/cp-common-openrdf-2.0.2.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=cp-common-utils -Dversion=3.1.1 -Dfile=$STARDOG_HOME/client/api/cp-common-utils-3.1.1.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.brsanthu -DartifactId=data-exporter -Dversion=1.0.0 -Dfile=$STARDOG_HOME/client/api/data-exporter-1.0.0.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.github.jsonld-java -DartifactId=jsonld-java -Dversion=1.0.1-SNAPSHOT -Dfile=$STARDOG_HOME/client/api/jsonld-java-1.0.1-SNAPSHOT.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.github.jsonld-java -DartifactId=jsonld-java-sesame -Dversion=1.0.1-SNAPSHOT -Dfile=$STARDOG_HOME/client/api/jsonld-java-sesame-1.0.1-SNAPSHOT.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=org.openrdf.sesame -DartifactId=openrdf-sesame -Dversion=2.7.10 -Dfile=$STARDOG_HOME/client/api/openrdf-sesame-2.7.10.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=pellet -Dversion=3.0.1 -Dfile=$STARDOG_HOME/client/api/pellet-3.0.1.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=protocols-api-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/protocols-api-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=protocols-api-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/protocols-api-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-common-rdf -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-common-rdf-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-common-utils -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-common-utils-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-icv -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-icv-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-icv-core-api -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-icv-core-api-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-openrdf-utils -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-openrdf-utils-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-protocols-spec-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-spec-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-protocols-spec-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-spec-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-reasoning-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning-api -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-reasoning-api-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-reasoning-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-search-api -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-search-api-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-snarl-api -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/api/stardog-snarl-api-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=bigpacket-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/bigpacket-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=bigpacket-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/bigpacket-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=cp-common-protobuf -Dversion=1.2 -Dfile=$STARDOG_HOME/client/snarl/cp-common-protobuf-1.2.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-icv-api -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-icv-api-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-icv-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-icv-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-icv-snarl-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-icv-snarl-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-icv-snarl-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-icv-snarl-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning-protocol-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-reasoning-protocol-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-reasoning-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning-snarl-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-reasoning-snarl-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-reasoning-snarl-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-reasoning-snarl-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-search-snarl-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-search-snarl-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-snarl-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-snarl-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-snarl-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-snarl-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-watchdog-protocol-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-watchdog-protocol-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-watchdog-snarl-client -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-watchdog-snarl-client-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.clarkparsia -DartifactId=stardog-watchdog-snarl-shared -Dversion=2.1.3 -Dfile=$STARDOG_HOME/client/snarl/stardog-watchdog-snarl-shared-2.1.3.jar -Dpackaging=jar -DgeneratePom=true
+
