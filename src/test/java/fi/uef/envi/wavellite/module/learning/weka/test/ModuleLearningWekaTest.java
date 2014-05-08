@@ -11,11 +11,10 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-
 import weka.classifiers.functions.MultilayerPerceptron;
-
 import fi.uef.envi.wavellite.entity.derivation.DatasetObservation;
 import fi.uef.envi.wavellite.entity.derivation.base.ComponentPropertyBase;
 import fi.uef.envi.wavellite.entity.derivation.base.ComponentPropertyValueDouble;
@@ -32,6 +31,7 @@ import fi.uef.envi.wavellite.entity.situation.base.RelevantIndividualBase;
 import fi.uef.envi.wavellite.entity.situation.base.SituationBase;
 import fi.uef.envi.wavellite.module.ModuleResult;
 import fi.uef.envi.wavellite.module.learning.base.AbstractModuleLearning;
+import fi.uef.envi.wavellite.operator.extraction.base.weka.AbstractSituationExtractorListenerWeka;
 import fi.uef.envi.wavellite.operator.extraction.base.weka.SituationExtractorListenerWeka;
 import fi.uef.envi.wavellite.operator.extraction.base.weka.SituationExtractorWeka;
 
@@ -58,7 +58,7 @@ public class ModuleLearningWekaTest {
 	public void test1() {
 		ModuleResult<DatasetObservation, Situation> m = new TestModuleLearning();
 		Queue<Situation> q = m.result();
-		
+
 		DatasetObservation o = new DatasetObservationBase();
 
 		o.addComponent(new ComponentPropertyBase("p1"),
@@ -69,20 +69,20 @@ public class ModuleLearningWekaTest {
 				new ComponentPropertyValueInteger(18));
 
 		m.consider(o);
-		
+
 		Situation a = q.poll();
 
 		Situation e = new SituationBase("s1");
 		ElementaryInfon i = new ElementaryInfonBase("i1");
 		i.setRelation(new RelationBase("r1"));
-		i.addRelevantObject(new RelevantIndividualBase("o1", new AttributeValue(
-				"a1", new ValueString("v1", "A"))));
+		i.addRelevantObject(new RelevantIndividualBase("o1",
+				new AttributeValue("a1", new ValueString("v1", "A"))));
 		i.setPolarity(Polarity.True);
 		e.addSupportedInfon(i);
 
 		assertEquals(e, a);
 	}
-	
+
 	@Test
 	public void test2() {
 		ModuleResult<DatasetObservation, Situation> m = new TestModuleLearning();
@@ -104,8 +104,8 @@ public class ModuleLearningWekaTest {
 		Situation e = new SituationBase("s1");
 		ElementaryInfon i = new ElementaryInfonBase("i1");
 		i.setRelation(new RelationBase("r1"));
-		i.addRelevantObject(new RelevantIndividualBase("o1", new AttributeValue(
-				"a1", new ValueString("v1", "B"))));
+		i.addRelevantObject(new RelevantIndividualBase("o1",
+				new AttributeValue("a1", new ValueString("v1", "B"))));
 		i.setPolarity(Polarity.True);
 		e.addSupportedInfon(i);
 
@@ -124,40 +124,32 @@ public class ModuleLearningWekaTest {
 				e.printStackTrace();
 			}
 
-			o.setListener(new TestKnowledgeAcquirerListener());
+			o.setListener(new TestSituationExtractorListener());
 		}
 
 		@Override
 		public void considerAll(Collection<DatasetObservation> observations) {
-			queue.addAll(o.extract(observations));
+			Collection<Situation> situations = new HashSet<Situation>();
+
+			o.extract(observations, situations);
+
+			queue.addAll(situations);
 		}
 
-		private class TestKnowledgeAcquirerListener implements
-				SituationExtractorListenerWeka {
+		private class TestSituationExtractorListener extends
+				AbstractSituationExtractorListenerWeka {
 
-			private Set<Situation> situations;
-			
-			public TestKnowledgeAcquirerListener() {
-				situations = new HashSet<Situation>();
-			}
-			
 			@Override
 			public void onClassification(String label) {
 				Situation s = new SituationBase("s1");
 				ElementaryInfon i = new ElementaryInfonBase("i1");
 				i.setRelation(new RelationBase("r1"));
 				i.addRelevantObject(new RelevantIndividualBase("o1",
-						new AttributeValue("a1", new ValueString("v1",
-								label))));
+						new AttributeValue("a1", new ValueString("v1", label))));
 				i.setPolarity(Polarity.True);
 				s.addSupportedInfon(i);
 
 				situations.add(s);
-			}
-
-			@Override
-			public Set<Situation> getSituations() {
-				return situations;
 			}
 		}
 
