@@ -435,7 +435,7 @@ public class ModuleStoreSailTest {
 
 		store.close();
 	}
-	
+
 	@Test
 	public void test6a() {
 		ModuleStore store = new ModuleStoreSail("http://example.org#");
@@ -449,7 +449,7 @@ public class ModuleStoreSailTest {
 		o1.setTemporalLocation(new TemporalLocationDateTime("tl1", dtf
 				.parseDateTime("2014-02-14T00:01:00.000+02:00")));
 		store.consider(o1);
-		
+
 		SensorObservation o2 = new SensorObservationBase("o2");
 		o2.setSensor(sensor("s1"));
 		o2.setProperty(property("p1"));
@@ -482,7 +482,7 @@ public class ModuleStoreSailTest {
 				"http://example.org#tl2", dtf
 						.parseDateTime("2014-02-14T00:00:00.000+02:00")));
 		e.add(o3);
-		
+
 		SensorObservation o4 = new SensorObservationBase(
 				"http://example.org#o1");
 		o4.setSensor(sensor("http://example.org#s1"));
@@ -1781,6 +1781,8 @@ public class ModuleStoreSailTest {
 		e.add(s3);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -1861,6 +1863,8 @@ public class ModuleStoreSailTest {
 		e.add(s3);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -1896,6 +1900,8 @@ public class ModuleStoreSailTest {
 		e.add(s3);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -1934,6 +1940,8 @@ public class ModuleStoreSailTest {
 		e.add(s3);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -1982,6 +1990,8 @@ public class ModuleStoreSailTest {
 		e.add(s2);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -2031,6 +2041,8 @@ public class ModuleStoreSailTest {
 		e.add(s1);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -2082,6 +2094,8 @@ public class ModuleStoreSailTest {
 		e.add(s2);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -2132,6 +2146,8 @@ public class ModuleStoreSailTest {
 		e.add(s1);
 
 		assertEquals(e, a);
+		
+		store.close();
 	}
 
 	@Test
@@ -2192,6 +2208,41 @@ public class ModuleStoreSailTest {
 		e.add(s2);
 
 		assertEquals(e, a);
+		
+		store.close();
+	}
+
+	@Test
+	public void test30a() {
+		ModuleStore store = new ModuleStoreSail("http://example.org#");
+
+		DateTimeFormatter dtf = ISODateTimeFormat.dateTimeParser()
+				.withOffsetParsed();
+
+		Situation s1 = new SituationBase("http://example.org#s1");
+		ElementaryInfon i1 = new ElementaryInfonBase("http://example.org#i1");
+		s1.addSupportedInfon(i1);
+		i1.setRelation(new RelationBase("http://example.org#storm"));
+		i1.setPolarity(Polarity.True);
+		i1.addRelevantObject(new AttributeTemporalLocation(
+				new TemporalLocationInterval(
+						"http://example.org#tl11",
+						new TemporalLocationDateTime(
+								"http://example.org#dt11",
+								dtf.parseDateTime("2014-03-03T16:00:00.000+02:00")),
+						new TemporalLocationDateTime(
+								"http://example.org#dt12",
+								dtf.parseDateTime("2014-03-03T17:00:00.000+02:00")))));
+		
+		store.consider(s1);
+		
+		assertEquals(1, Iterators.asList(store.getSituations()).size());
+		
+		store.deleteSituation(s1);
+		
+		assertEquals(0, Iterators.asList(store.getSituations()).size());
+		
+		store.close();
 	}
 
 }

@@ -16,6 +16,8 @@ import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.Update;
+import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -96,7 +98,7 @@ public class ModuleStoreSail extends AbstractModuleStoreRdf {
 		for (Statement statement : statements)
 			store(statement);
 	}
-	
+
 	@Override
 	public long size() {
 		try {
@@ -117,7 +119,7 @@ public class ModuleStoreSail extends AbstractModuleStoreRdf {
 	}
 
 	@Override
-	protected Model executeSparql(String sparql) {
+	protected Model executeSelectQuery(String sparql) {
 		Model ret = new LinkedHashModel();
 
 		try {
@@ -136,8 +138,19 @@ public class ModuleStoreSail extends AbstractModuleStoreRdf {
 				| QueryEvaluationException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		return ret;
+	}
+
+	@Override
+	protected void executeDeleteQuery(String sparql) {
+		try {
+			Update update = conn.prepareUpdate(QueryLanguage.SPARQL, sparql);
+			update.execute();
+		} catch (RepositoryException | MalformedQueryException
+				| UpdateExecutionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

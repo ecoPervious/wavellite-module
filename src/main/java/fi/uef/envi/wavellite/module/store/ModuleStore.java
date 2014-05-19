@@ -75,6 +75,8 @@ public interface ModuleStore extends Module<Entity> {
 	public Iterator<Situation> getSituations(TemporalLocationInterval interval,
 			Relation... relations);
 
+	public void deleteSituation(Situation situation);
+	
 	public Iterator<Relation> getRelations();
 
 	public String getNamespace();

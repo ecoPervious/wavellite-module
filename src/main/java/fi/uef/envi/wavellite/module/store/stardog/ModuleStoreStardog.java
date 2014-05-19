@@ -21,6 +21,7 @@ import com.complexible.stardog.api.Adder;
 import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.GraphQuery;
+import com.complexible.stardog.api.UpdateQuery;
 import com.complexible.stardog.reasoning.api.ReasoningType;
 
 import fi.uef.envi.wavellite.module.store.base.AbstractModuleStoreRdf;
@@ -206,7 +207,7 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 	}
 
 	@Override
-	public Model executeSparql(String sparql) {
+	protected Model executeSelectQuery(String sparql) {
 		Model ret = new LinkedHashModel();
 
 		try {
@@ -221,6 +222,16 @@ public class ModuleStoreStardog extends AbstractModuleStoreRdf {
 		}
 
 		return ret;
+	}
+	
+	@Override
+	protected void executeDeleteQuery(String sparql) {
+		try {
+			UpdateQuery updateQuery = conn.update(sparql);
+			updateQuery.execute();
+		} catch (StardogException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

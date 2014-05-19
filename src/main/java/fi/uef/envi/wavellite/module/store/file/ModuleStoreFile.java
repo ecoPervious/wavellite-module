@@ -116,7 +116,12 @@ public class ModuleStoreFile extends AbstractModuleStoreRdf {
 	}
 
 	@Override
-	public Model executeSparql(String sparql) {
+	protected Model executeSelectQuery(String sparql) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	protected void executeDeleteQuery(String sparql) {
 		throw new UnsupportedOperationException();
 	}
 

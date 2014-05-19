@@ -386,7 +386,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		sb.append(")");
 		sb.append("}");
 
-		Iterator<SensorObservation> it = createSensorObservations(executeSparql(sb
+		Iterator<SensorObservation> it = createSensorObservations(executeSelectQuery(sb
 				.toString()));
 
 		if (!sort)
@@ -395,7 +395,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		List<SensorObservation> list = IteratorUtils.toList(it);
 
 		Collections.sort(list, sensorObservationTimeComparator);
-		
+
 		return list.iterator();
 	}
 
@@ -635,7 +635,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		}
 		sb.append("}");
 
-		return createDatasetObservations(executeSparql(sb.toString()));
+		return createDatasetObservations(executeSelectQuery(sb.toString()));
 	}
 
 	public Iterator<Situation> getSituations() {
@@ -884,12 +884,32 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 
 		sb.append("}");
 
-		return createSituations(executeSparql(sb.toString()));
+		return createSituations(executeSelectQuery(sb.toString()));
 	}
 
 	public Iterator<Situation> getSituations(Relation relation) {
 		return getSituations(Collections.singletonList(relation).toArray(
 				new Relation[] {}));
+	}
+
+	public void deleteSituation(Situation situation) {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("delete {");
+		sb.append("<" + situation.getId() + "> <" + RDF.TYPE.stringValue()
+				+ "> <" + STO.Situation + "> .");
+		sb.append("<" + situation.getId() + "> <" + STO.supportedInfon
+				+ "> ?supportedInfon .");
+		sb.append("?supportedInfon ?property ?object .");
+		sb.append("} where {");
+		sb.append("<" + situation.getId() + "> <" + RDF.TYPE.stringValue()
+				+ "> <" + STO.Situation + "> .");
+		sb.append("<" + situation.getId() + "> <" + STO.supportedInfon
+				+ "> ?supportedInfon .");
+		sb.append("?supportedInfon ?property ?object .");
+		sb.append("}");
+		
+		executeDeleteQuery(sb.toString());
 	}
 
 	public Iterator<Relation> getRelations() {
@@ -903,10 +923,12 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ STO.Relation + ">");
 		sb.append("}");
 
-		return createRelations(executeSparql(sb.toString()));
+		return createRelations(executeSelectQuery(sb.toString()));
 	}
 
-	protected abstract Model executeSparql(String sparql);
+	protected abstract void executeDeleteQuery(String sparql);
+	
+	protected abstract Model executeSelectQuery(String sparql);
 
 	protected Iterator<SensorObservation> createSensorObservations(Model model) {
 		if (!isOpen)
@@ -1093,7 +1115,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		public int compare(SensorObservation o1, SensorObservation o2) {
 			TemporalLocation l1 = o1.getTemporalLocation();
 			TemporalLocation l2 = o2.getTemporalLocation();
-			
+
 			if (l1 == null || l2 == null)
 				throw new NullPointerException("Cannot compare time [l1 = "
 						+ l1 + "; l2 = " + l2 + "]");
@@ -1106,7 +1128,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				if (t1 == null || t2 == null)
 					throw new NullPointerException("Cannot compare time [t1 = "
 							+ t1 + "; t2 = " + t2 + "]");
-				
+
 				if (t1.isBefore(t2))
 					return -1;
 				if (t1.isAfter(t2))
