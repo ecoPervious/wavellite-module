@@ -132,7 +132,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		if (entityRepresentationSsn == null)
 			entityRepresentationSsn = new EntityRepresentationRdfSsn(
 					defaultNamespace, entityRepresentationGeo,
-					entityRepresentationTime, entityRepresentationProv);
+					entityRepresentationTime);
 		if (entityRepresentationQb == null)
 			entityRepresentationQb = new EntityRepresentationRdfQb(
 					defaultNamespace, entityRepresentationGeo,
@@ -1069,6 +1069,8 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		@Override
 		public void visit(SensorObservation entity) {
 			storeAll(entityRepresentationSsn.createRepresentation(entity));
+			// TODO this should perhaps be an optional feature
+			storeAll(entityRepresentationProv.createRepresentation(entity));
 		}
 
 		@Override

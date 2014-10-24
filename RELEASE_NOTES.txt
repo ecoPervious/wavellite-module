@@ -2,6 +2,7 @@
 --------------------------
 
 * FIXED: AbstractModuleStoreRdf to include EntityRepresentationRdfProv
+* CHANGED: Generate all PROV triples for SensorObservation and store them
 
 0.1.1 Changes (2014-10-23)
 --------------------------
