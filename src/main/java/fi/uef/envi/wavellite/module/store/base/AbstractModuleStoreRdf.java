@@ -56,6 +56,7 @@ import fi.uef.envi.wavellite.entity.situation.Situation;
 import fi.uef.envi.wavellite.module.store.ModuleStore;
 import fi.uef.envi.wavellite.operator.translation.base.MeasurementResultTranslatorBase;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfGeo;
+import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfProv;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfQb;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSsn;
 import fi.uef.envi.wavellite.representation.rdf.EntityRepresentationRdfSto;
@@ -90,6 +91,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	protected String defaultNamespace;
 	protected EntityRepresentationRdfGeo entityRepresentationGeo;
 	protected EntityRepresentationRdfTime entityRepresentationTime;
+	protected EntityRepresentationRdfProv entityRepresentationProv;
 	protected EntityRepresentationRdfSsn entityRepresentationSsn;
 	protected EntityRepresentationRdfQb entityRepresentationQb;
 	protected EntityRepresentationRdfSto entityRepresentationSto;
@@ -124,10 +126,13 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 		if (entityRepresentationTime == null)
 			entityRepresentationTime = new EntityRepresentationRdfTime(
 					defaultNamespace);
+		if (entityRepresentationProv == null)
+			entityRepresentationProv = new EntityRepresentationRdfProv(
+					defaultNamespace);
 		if (entityRepresentationSsn == null)
 			entityRepresentationSsn = new EntityRepresentationRdfSsn(
 					defaultNamespace, entityRepresentationGeo,
-					entityRepresentationTime);
+					entityRepresentationTime, entityRepresentationProv);
 		if (entityRepresentationQb == null)
 			entityRepresentationQb = new EntityRepresentationRdfQb(
 					defaultNamespace, entityRepresentationGeo,
@@ -908,7 +913,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 				+ "> ?supportedInfon .");
 		sb.append("?supportedInfon ?property ?object .");
 		sb.append("}");
-		
+
 		executeDeleteQuery(sb.toString());
 	}
 
@@ -927,7 +932,7 @@ public abstract class AbstractModuleStoreRdf implements ModuleStore {
 	}
 
 	protected abstract void executeDeleteQuery(String sparql);
-	
+
 	protected abstract Model executeSelectQuery(String sparql);
 
 	protected Iterator<SensorObservation> createSensorObservations(Model model) {

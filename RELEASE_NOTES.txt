@@ -1,4 +1,9 @@
-0.1.1 Changes (YYYY-MM-DD)
+0.2.0 Changes (YYYY-MM-DD)
+--------------------------
+
+* FIXED: AbstractModuleStoreRdf to include EntityRepresentationRdfProv
+
+0.1.1 Changes (2014-10-23)
 --------------------------
 
 * MODIFIED: AbstractModuleStoreRdf was modified to consider SpatialLocation 
