@@ -16,6 +16,7 @@ mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-icv-api_
 mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-icv-shared -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-icv-shared-3.0.jar -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-protocols-api-client -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-api-client-3.0.jar -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-protocols-api-server -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-api-server-3.0.jar -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-protocols-api-shared -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-api-shared-3.0.jar -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-protocols-barc-client -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-barc-client-3.0.jar -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-protocols-barc-server -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-barc-server-3.0.jar -Dpackaging=jar -DgeneratePom=true
 mvn install:install-file -DgroupId=com.complexible -DartifactId=stardog-protocols-barc-shared -Dversion=3.0 -Dfile=$STARDOG_HOME/client/api/stardog-protocols-barc-shared-3.0.jar -Dpackaging=jar -DgeneratePom=true
